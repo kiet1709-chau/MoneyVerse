@@ -1,5 +1,5 @@
 {
-  "name": "layout-project",
+  "name": "frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,8 +11,13 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.2",
+    "axios": "^1.18.1",
+    "lucide-react": "^1.24.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "react-router": "^8.2.0",
+    "react-router-dom": "^7.18.1",
+    "sonner": "^2.0.7",
     "tailwindcss": "^4.3.2"
   },
   "devDependencies": {
