@@ -19,6 +19,7 @@ import Profile from './pages/Profile';
 import SavingsGoals from './pages/SavingsGoals';
 import MovieTickets from './pages/MovieTickets';
 import TravelBooking from './pages/TravelBooking';
+import Settings from './pages/Settings';
 
 function App() {
   // Quản lý trạng thái Dark Mode ở cấp cao nhất
@@ -196,6 +197,15 @@ function App() {
           path="/profile" 
           element={
             <Profile
+              darkMode={darkMode}
+              setDarkMode={setDarkMode}
+            />
+          }
+        />
+        <Route 
+          path="/settings" 
+          element={
+            <Settings
               darkMode={darkMode}
               setDarkMode={setDarkMode}
             />

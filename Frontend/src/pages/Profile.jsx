@@ -188,7 +188,7 @@ const Profile = ({ darkMode, setDarkMode }) => {
                   🔐 Bảo mật
                 </button>
                 <button
-                  onClick={() => navigate('/dashboard')}
+                  onClick={() => navigate('/settings')}
                   className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-semibold transition-colors flex items-center justify-center gap-2"
                 >
                   ⚙️ Cài đặt
