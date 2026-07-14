@@ -73,8 +73,9 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
   const menuItems = [
     { name: 'Tổng quan ví', icon: '💳', path: '/dashboard' },
     { name: 'Lịch sử giao dịch', icon: '📋', path: '/transaction-history' }, 
-    { name: 'Thống kê chi tiêu', icon: '📊', path: '#' },
-    { name: 'Cài đặt bảo mật', icon: '🛡️', path: '#' },
+    { name: 'Thống kê chi tiêu', icon: '📊', path: '/spending-statistics' },
+    { name: 'Heo tiết kiệm', icon: '🐷', path: '/savings-goals' },
+    { name: 'Cài đặt bảo mật', icon: '🛡️', path: '/security-settings' },
   ];
 
   return (
@@ -126,6 +127,13 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
             <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">Chế độ tối</span>
             <DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
           </div>
+          <button 
+            onClick={() => navigate('/profile')} 
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 font-semibold text-sm transition-all text-left"
+          >
+            <span className="text-xl">👤</span>
+            <span>Tài khoản cá nhân</span>
+          </button>
           <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 font-semibold text-sm transition-all text-left">
             <span className="text-xl">🚪</span>
             <span>Đăng xuất</span>
@@ -153,7 +161,7 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
                 </span>
               )}
             </button>
-            <div title="Đăng xuất" onClick={handleLogout} className="bg-gradient-to-r from-blue-400 to-indigo-500 w-10 h-10 rounded-full cursor-pointer shadow-md border-2 border-white dark:border-gray-800 hover:opacity-80 transition-opacity flex items-center justify-center font-bold text-white text-sm">
+            <div title="Tài khoản cá nhân" onClick={() => navigate('/profile')} className="bg-gradient-to-r from-blue-400 to-indigo-500 w-10 h-10 rounded-full cursor-pointer shadow-md border-2 border-white dark:border-gray-800 hover:opacity-80 transition-opacity flex items-center justify-center font-bold text-white text-sm">
               AD
             </div>
           </div>
@@ -167,7 +175,9 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
             <p className="text-purple-100 text-sm md:text-base font-medium mb-1">Số dư khả dụng</p>
             <h2 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight">{formatCurrency(balance)}</h2>
             <div className="flex gap-4 relative z-10">
-              <button className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
+              <button 
+                onClick={() => navigate('/wallet-top-up')}
+                className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg> Nạp tiền
               </button>
               {/* ĐÃ THÊM SỰ KIỆN NÚT CHUYỂN KHOẢN TRONG CARD */}
@@ -181,7 +191,7 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
           </div>
 
           {/* 👉 ĐÃ THÊM: Khu vực Thao tác nhanh */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {/* Nút Chuyển Khoản mà bạn cung cấp */}
             <button 
               onClick={() => navigate('/transfer')}
@@ -192,19 +202,44 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
             </button>
             
             {/* Thêm một số nút tiện ích cho đồng bộ giao diện */}
-            <button className="flex flex-col items-center justify-center p-4 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-2xl hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors shadow-sm">
+            <button 
+              onClick={() => navigate('/wallet-top-up')}
+              className="flex flex-col items-center justify-center p-4 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-2xl hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors shadow-sm"
+            >
               <span className="text-2xl mb-2">📥</span>
               <span className="font-semibold text-sm">Nạp tiền</span>
             </button>
             
-            <button className="flex flex-col items-center justify-center p-4 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-2xl hover:bg-orange-100 dark:hover:bg-orange-900/40 transition-colors shadow-sm">
+            <button 
+              onClick={() => navigate('/mobile-top-up')}
+              className="flex flex-col items-center justify-center p-4 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-2xl hover:bg-orange-100 dark:hover:bg-orange-900/40 transition-colors shadow-sm"
+            >
               <span className="text-2xl mb-2">📱</span>
               <span className="font-semibold text-sm">Nạp ĐT</span>
             </button>
             
-            <button onClick={() => setIsBillCenterOpen(true)} className="flex flex-col items-center justify-center p-4 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-2xl hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors shadow-sm">
+            <button 
+              onClick={() => setIsBillCenterOpen(false) || navigate('/bills')}
+              className="flex flex-col items-center justify-center p-4 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-2xl hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors shadow-sm"
+            >
               <span className="text-2xl mb-2">🧾</span>
               <span className="font-semibold text-sm">Hóa đơn</span>
+            </button>
+
+            <button 
+              onClick={() => navigate('/movie-tickets')}
+              className="flex flex-col items-center justify-center p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors shadow-sm"
+            >
+              <span className="text-2xl mb-2">🎬</span>
+              <span className="font-semibold text-sm">Vé Phim</span>
+            </button>
+
+            <button 
+              onClick={() => navigate('/travel-booking')}
+              className="flex flex-col items-center justify-center p-4 bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-400 rounded-2xl hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-colors shadow-sm"
+            >
+              <span className="text-2xl mb-2">✈️</span>
+              <span className="font-semibold text-sm">Du Lịch</span>
             </button>
           </div>
 
@@ -213,7 +248,12 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
             <div className="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="font-bold text-lg text-gray-800 dark:text-white">Thống kê chi tiêu (Tháng 7)</h3>
-                <span className="text-sm text-purple-600 dark:text-purple-400 font-medium cursor-pointer hover:underline">Xem chi tiết</span>
+                <button
+                  onClick={() => navigate('/spending-statistics')}
+                  className="text-sm text-purple-600 dark:text-purple-400 font-medium cursor-pointer hover:underline"
+                >
+                  Xem chi tiết
+                </button>
               </div>
               <div className="h-48 flex items-end gap-4 justify-between pt-4 border-b border-gray-200 dark:border-gray-700 pb-2">
                 <div className="w-full bg-blue-100 dark:bg-blue-900/30 rounded-t-md h-[40%] relative group hover:bg-blue-200 transition-colors"><span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs text-gray-500">Ăn uống</span></div>

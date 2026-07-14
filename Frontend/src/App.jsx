@@ -10,6 +10,15 @@ import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 import TransactionHistory from './pages/TransactionHistory';
 import Transfer from './pages/Transfer';
+import SpendingStatistics from './pages/SpendingStatistics';
+import SecuritySettings from './pages/SecuritySettings';
+import MobileTopUp from './pages/MobileTopUp';
+import WalletTopUp from './pages/WalletTopUp';
+import Bills from './pages/Bills';
+import Profile from './pages/Profile';
+import SavingsGoals from './pages/SavingsGoals';
+import MovieTickets from './pages/MovieTickets';
+import TravelBooking from './pages/TravelBooking';
 
 function App() {
   // Quản lý trạng thái Dark Mode ở cấp cao nhất
@@ -84,18 +93,123 @@ function App() {
           } 
         />
         <Route 
-    path="/transfer" 
-    element={
-      <Transfer 
-        darkMode={darkMode} 
-        setDarkMode={setDarkMode}
-        balance={balance}
-        setBalance={setBalance}
-        transactions={transactions}
-        setTransactions={setTransactions}
-      />
-    } 
-  />
+          path="/transfer" 
+          element={
+            <Transfer 
+              darkMode={darkMode} 
+              setDarkMode={setDarkMode}
+              balance={balance}
+              setBalance={setBalance}
+              transactions={transactions}
+              setTransactions={setTransactions}
+            />
+          } 
+        />
+        <Route 
+          path="/spending-statistics" 
+          element={
+            <SpendingStatistics
+              darkMode={darkMode}
+              setDarkMode={setDarkMode}
+              transactions={transactions}
+              bills={bills}
+            />
+          }
+        />
+        <Route 
+          path="/security-settings" 
+          element={
+            <SecuritySettings
+              darkMode={darkMode}
+              setDarkMode={setDarkMode}
+            />
+          }
+        />
+        <Route 
+          path="/mobile-top-up" 
+          element={
+            <MobileTopUp
+              darkMode={darkMode}
+              setDarkMode={setDarkMode}
+              balance={balance}
+              setBalance={setBalance}
+              transactions={transactions}
+              setTransactions={setTransactions}
+            />
+          }
+        />
+        <Route 
+          path="/wallet-top-up" 
+          element={
+            <WalletTopUp
+              darkMode={darkMode}
+              setDarkMode={setDarkMode}
+              balance={balance}
+              setBalance={setBalance}
+              transactions={transactions}
+              setTransactions={setTransactions}
+            />
+          }
+        />
+        <Route 
+          path="/bills" 
+          element={
+            <Bills
+              darkMode={darkMode}
+              setDarkMode={setDarkMode}
+              balance={balance}
+              setBalance={setBalance}
+              bills={bills}
+              setBills={setBills}
+              transactions={transactions}
+              setTransactions={setTransactions}
+            />
+          }
+        />
+        <Route 
+          path="/profile" 
+          element={
+            <Profile
+              darkMode={darkMode}
+              setDarkMode={setDarkMode}
+            />
+          }
+        />
+        <Route 
+          path="/savings-goals" 
+          element={
+            <SavingsGoals
+              darkMode={darkMode}
+              setDarkMode={setDarkMode}
+            />
+          }
+        />
+        <Route 
+          path="/movie-tickets" 
+          element={
+            <MovieTickets
+              darkMode={darkMode}
+              setDarkMode={setDarkMode}
+              balance={balance}
+              setBalance={setBalance}
+              transactions={transactions}
+              setTransactions={setTransactions}
+            />
+          }
+        />
+        <Route 
+          path="/travel-booking" 
+          element={
+            <TravelBooking
+              darkMode={darkMode}
+              setDarkMode={setDarkMode}
+              balance={balance}
+              setBalance={setBalance}
+              transactions={transactions}
+              setTransactions={setTransactions}
+            />
+          }
+        />
         {/* THÊM MỚI: Bắt các route không tồn tại và hiển thị trang NotFound */}
         <Route 
           path="*" 
