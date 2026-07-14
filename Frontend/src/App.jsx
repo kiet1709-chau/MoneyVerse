@@ -7,7 +7,8 @@ import './index.css';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
-
+import NotFound from './pages/NotFound';
+import TransactionHistory from './pages/TransactionHistory';
 function App() {
   // Quản lý trạng thái Dark Mode ở cấp cao nhất
   const [darkMode, setDarkMode] = useState(() => {
@@ -43,6 +44,10 @@ function App() {
         <Route 
           path="/dashboard" 
           element={<Dashboard darkMode={darkMode} setDarkMode={setDarkMode} />} 
+        />
+        <Route 
+          path="/transaction-history" 
+          element={<TransactionHistory darkMode={darkMode} setDarkMode={setDarkMode} />} 
         />
       </Routes>
     </Router>

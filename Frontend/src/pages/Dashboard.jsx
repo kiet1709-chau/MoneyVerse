@@ -42,15 +42,15 @@ const Dashboard = ({ darkMode, setDarkMode }) => {
   };
 
   const handleLogout = () => {
-    // Xóa token ở đây nếu có trong thực tế
     navigate('/login');
   };
 
+  // ĐÃ CẬP NHẬT: Thêm trường `path` để điều hướng
   const menuItems = [
-    { name: 'Tổng quan ví', icon: '💳' },
-    { name: 'Lịch sử giao dịch', icon: '📋' },
-    { name: 'Thống kê chi tiêu', icon: '📊' },
-    { name: 'Cài đặt bảo mật', icon: '🛡️' },
+    { name: 'Tổng quan ví', icon: '💳', path: '/dashboard' },
+    { name: 'Lịch sử giao dịch', icon: '📋', path: '/transaction-history' },
+    { name: 'Thống kê chi tiêu', icon: '📊', path: '#' },
+    { name: 'Cài đặt bảo mật', icon: '🛡️', path: '#' },
   ];
 
   return (
@@ -77,7 +77,20 @@ const Dashboard = ({ darkMode, setDarkMode }) => {
           </div>
           <nav className="space-y-2">
             {menuItems.map((item) => (
-              <button key={item.name} className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-gray-600 dark:text-gray-300 font-medium hover:bg-purple-50 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400 transition-all text-left">
+              <button 
+                key={item.name} 
+                // ĐÃ CẬP NHẬT: Thêm sự kiện onClick để chuyển trang
+                onClick={() => {
+                  if (item.path !== '#') {
+                    navigate(item.path);
+                  }
+                }}
+                className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl font-medium transition-all text-left ${
+                  item.path === '/dashboard' 
+                    ? 'bg-purple-50 dark:bg-gray-700 text-purple-600 dark:text-purple-400' 
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400'
+                }`}
+              >
                 <span className="text-xl">{item.icon}</span>
                 <span>{item.name}</span>
               </button>
@@ -123,9 +136,9 @@ const Dashboard = ({ darkMode, setDarkMode }) => {
           </div>
         </header>
 
-        <main className="p-6 md:p-8 flex-1 max-w-6xl mx-auto w-full">
+        <main className="p-6 md:p-8 flex-1 max-w-6xl mx-auto w-full space-y-6">
           {/* Card Số dư */}
-          <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-6 shadow-xl text-white mb-8 relative overflow-hidden">
+          <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-6 shadow-xl text-white relative overflow-hidden">
             <div className="absolute top-0 right-0 -mr-8 -mt-8 w-40 h-40 rounded-full bg-white opacity-10"></div>
             <p className="text-purple-100 text-sm md:text-base font-medium mb-1">Số dư khả dụng</p>
             <h2 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight">{formatCurrency(balance)}</h2>
@@ -139,11 +152,12 @@ const Dashboard = ({ darkMode, setDarkMode }) => {
             </div>
           </div>
 
+          {/* Grid Thống Kê & Giao Dịch */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="font-bold text-lg text-gray-800 dark:text-white">Thống kê chi tiêu (Tháng 7)</h3>
-                <span className="text-sm text-purple-600 dark:text-purple-400 font-medium cursor-pointer">Xem chi tiết</span>
+                <span className="text-sm text-purple-600 dark:text-purple-400 font-medium cursor-pointer hover:underline">Xem chi tiết</span>
               </div>
               <div className="h-48 flex items-end gap-4 justify-between pt-4 border-b border-gray-200 dark:border-gray-700 pb-2">
                 <div className="w-full bg-blue-100 dark:bg-blue-900/30 rounded-t-md h-[40%] relative group hover:bg-blue-200 transition-colors"><span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs text-gray-500">Ăn uống</span></div>
@@ -154,7 +168,17 @@ const Dashboard = ({ darkMode, setDarkMode }) => {
             </div>
 
             <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-              <h3 className="font-bold text-lg text-gray-800 dark:text-white mb-4">Giao dịch gần đây</h3>
+              {/* ĐÃ CẬP NHẬT: Thêm nút Xem tất cả */}
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-bold text-lg text-gray-800 dark:text-white">Giao dịch gần đây</h3>
+                <button 
+                  onClick={() => navigate('/transactions')} 
+                  className="text-sm text-purple-600 dark:text-purple-400 font-medium hover:underline"
+                >
+                  Xem tất cả
+                </button>
+              </div>
+              
               <div className="space-y-4">
                 {bills.filter(b => b.status === 'paid').length === 0 ? (
                   <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-8">Chưa có giao dịch nào</p>
@@ -177,10 +201,62 @@ const Dashboard = ({ darkMode, setDarkMode }) => {
               </div>
             </div>
           </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-bold text-lg text-gray-800 dark:text-white flex items-center gap-2">🐖 Heo đất tiết kiệm</h3>
+                  <span className="text-[10px] bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 font-semibold px-2 py-1 rounded-full">Đang thực hiện</span>
+                </div>
+                <p className="font-semibold text-gray-700 dark:text-gray-300 text-sm mb-2">Mục tiêu: Đổi Laptop Mới</p>
+                <div className="flex justify-between text-xs text-gray-500 mb-1.5">
+                  <span>Tích lũy: {formatCurrency(12000000)}</span>
+                  <span>Mục tiêu: {formatCurrency(30000000)}</span>
+                </div>
+                <div className="w-full bg-gray-100 dark:bg-gray-700 h-3 rounded-full overflow-hidden">
+                  <div className="bg-gradient-to-r from-purple-500 to-indigo-500 h-full rounded-full transition-all duration-500" style={{ width: '40%' }}></div>
+                </div>
+              </div>
+              <button className="mt-5 w-full bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400 font-bold py-2 rounded-xl text-sm hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors">
+                + Bỏ ống thêm tiền
+              </button>
+            </div>
+
+            <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-6 rounded-2xl shadow-md text-white flex flex-col justify-between relative overflow-hidden">
+              <div className="absolute top-0 right-0 -mr-6 -mt-6 w-24 h-24 rounded-full bg-white opacity-10"></div>
+              <div>
+                <span className="bg-amber-400 text-gray-900 text-[10px] font-extrabold px-2.5 py-1 rounded-full tracking-wider uppercase">Voucher HOT</span>
+                <h4 className="font-bold text-lg mt-3 leading-snug">Khuyến mãi thanh toán hóa đơn</h4>
+                <p className="text-xs text-indigo-100 mt-1 leading-relaxed">
+                  Nhận ngay voucher hoàn tiền <strong>50.000đ</strong> cho giao dịch điện nước lần đầu tiên trên MoneyVerse!
+                </p>
+              </div>
+              <button className="mt-4 w-full bg-white text-purple-700 font-bold py-2 rounded-xl text-sm hover:bg-gray-100 transition-colors shadow-sm">
+                Nhận ưu đãi ngay
+              </button>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
+              <div>
+                <h3 className="font-bold text-lg text-gray-800 dark:text-white mb-3 flex items-center gap-2">💡 Mẹo tài chính hôm nay</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300 italic leading-relaxed">
+                  "Hãy áp dụng quy tắc 50/30/20: Dành 50% thu nhập cho nhu cầu thiết yếu, 30% cho sở thích cá nhân và luôn ưu tiên trích ra 20% để tích lũy trước khi tiêu xài."
+                </p>
+              </div>
+              <div className="text-xs text-gray-400 dark:text-gray-500 flex justify-between items-center mt-4">
+                <span>Chuyên gia MoneyVerse</span>
+                <a href="#" className="text-purple-600 dark:text-purple-400 font-semibold hover:underline">Xem thêm →</a>
+              </div>
+            </div>
+          </div>
+
+          <footer className="border-t border-gray-200 dark:border-gray-700 pt-6 text-center text-xs text-gray-400 dark:text-gray-500">
+            <p>© 2026 MoneyVerse. Mọi quyền được bảo lưu. 🔒 An toàn & Bảo mật tuyệt đối.</p>
+          </footer>
         </main>
       </div>
 
-      {/* Modal & Pop-ups giữ nguyên như code cũ, chỉ cần render dựa theo state */}
       {isBillCenterOpen && (
         <div className="fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-gray-50 dark:bg-gray-900 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
