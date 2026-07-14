@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DarkModeToggle from '../components/DarkModeToggle';
 
@@ -7,36 +7,81 @@ const WalletTopUp = ({ darkMode, setDarkMode, balance, setBalance, transactions,
   const [amount, setAmount] = useState('100000');
   const [method, setMethod] = useState('bank');
   const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const formatCurrency = (value) =>
     new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
 
   const presetAmounts = [50000, 100000, 200000, 500000, 1000000];
 
-  const handleTopUp = (e) => {
-    e.preventDefault();
-    const numericAmount = Number(amount);
-
-    if (!numericAmount || numericAmount < 10000) {
-      setMessage('Vui lòng nhập số tiền hợp lệ.');
-      return;
+  // Xóa message sau 5 giây
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage('');
+        setMessageType('');
+      }, 5000);
+      return () => clearTimeout(timer);
     }
+  }, [message]);
 
-    setBalance((prev) => prev + numericAmount);
-    const newTx = {
-      id: `WAL${Date.now().toString().slice(-4)}`,
-      name: 'Nạp tiền vào ví',
-      amount: numericAmount,
-      type: 'income',
-      category: 'Nạp ví',
-      date: new Date().toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', ''),
-      status: 'success',
-      icon: '💳',
-    };
+  const handleTopUp = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
 
-    setTransactions((prev) => [newTx, ...prev]);
-    setMessage(`Nạp tiền thành công ${formatCurrency(numericAmount)} bằng ${method === 'bank' ? 'chuyển khoản ngân hàng' : method === 'card' ? 'thẻ tín dụng' : 'Ví điện tử'}.`);
-    setAmount('100000');
+    try {
+      const numericAmount = Number(amount);
+
+      if (!numericAmount || numericAmount < 10000) {
+        setMessage('Vui lòng nhập số tiền tối thiểu 10.000 ₫.');
+        setMessageType('error');
+        setIsLoading(false);
+        return;
+      }
+
+      if (numericAmount > 100000000) {
+        setMessage('Số tiền nạp không được vượt quá 100.000.000 ₫.');
+        setMessageType('error');
+        setIsLoading(false);
+        return;
+      }
+
+      // Giả lập xử lý (delay 1.5 giây)
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      setBalance((prev) => prev + numericAmount);
+      const newTx = {
+        id: `WAL${Date.now().toString().slice(-4)}`,
+        name: 'Nạp tiền vào ví',
+        amount: numericAmount,
+        type: 'income',
+        category: 'Nạp ví',
+        date: new Date().toLocaleString('vi-VN', { 
+          day: '2-digit', 
+          month: '2-digit', 
+          year: 'numeric', 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        }).replace(',', ''),
+        status: 'success',
+        icon: '💳',
+      };
+
+      setTransactions((prev) => [newTx, ...prev]);
+      
+      const methodName = method === 'bank' ? 'Chuyển khoản ngân hàng' : 
+                         method === 'card' ? 'Thẻ tín dụng' : 'Ví điện tử';
+      
+      setMessage(`✓ Nạp tiền thành công ${formatCurrency(numericAmount)} bằng ${methodName}. Mã: ${newTx.id}`);
+      setMessageType('success');
+      setAmount('100000');
+    } catch (error) {
+      setMessage('Nạp tiền thất bại. Vui lòng thử lại.');
+      setMessageType('error');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -122,13 +167,25 @@ const WalletTopUp = ({ darkMode, setDarkMode, balance, setBalance, transactions,
 
             <button
               type="submit"
-              className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition-colors"
+              disabled={isLoading}
+              className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold transition-colors flex items-center justify-center gap-2"
             >
-              Xác nhận nạp tiền
+              {isLoading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Đang xử lý...</span>
+                </>
+              ) : (
+                'Xác nhận nạp tiền'
+              )}
             </button>
 
             {message && (
-              <div className={`rounded-xl px-4 py-3 text-sm ${message.includes('thành công') ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'}`}>
+              <div className={`rounded-xl px-4 py-3 text-sm animate-fade-in ${
+                messageType === 'success'
+                  ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
+                  : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800'
+              }`}>
                 {message}
               </div>
             )}

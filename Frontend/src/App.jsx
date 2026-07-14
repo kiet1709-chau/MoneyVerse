@@ -39,15 +39,41 @@ function App() {
   }, [darkMode]);
 
   // --- THÊM MỚI: State quản lý Số dư và Hóa đơn/Giao dịch ---
-  const [balance, setBalance] = useState(25000000);
-  const [bills, setBills] = useState([
-    { id: 1, name: 'Tiền học phí', amount: 2000000, dueDate: '15/07/2026', status: 'pending', provider: 'Đại học', date: '' },
-    { id: 2, name: 'Tiền điện tháng 6', amount: 450000, dueDate: '20/07/2026', status: 'pending', provider: 'EVN', date: '' },
-    { id: 3, name: 'Internet cáp quang', amount: 275000, dueDate: '22/07/2026', status: 'pending', provider: 'VNPT', date: '' },
-  ]);
+  // Lưu trữ và khôi phục từ localStorage
+  const [balance, setBalance] = useState(() => {
+    const savedBalance = localStorage.getItem('moneyverse_balance');
+    return savedBalance ? parseFloat(savedBalance) : 25000000;
+  });
+
+  const [bills, setBills] = useState(() => {
+    const savedBills = localStorage.getItem('moneyverse_bills');
+    return savedBills ? JSON.parse(savedBills) : [
+      { id: 1, name: 'Tiền học phí', amount: 2000000, dueDate: '15/07/2026', status: 'pending', provider: 'Đại học', date: '' },
+      { id: 2, name: 'Tiền điện tháng 6', amount: 450000, dueDate: '20/07/2026', status: 'pending', provider: 'EVN', date: '' },
+      { id: 3, name: 'Internet cáp quang', amount: 275000, dueDate: '22/07/2026', status: 'pending', provider: 'VNPT', date: '' },
+    ];
+  });
   
   // 👉 ĐÃ SỬA LỖI: Khai báo mảng transactions để tránh lỗi undefined làm crash app
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState(() => {
+    const savedTransactions = localStorage.getItem('moneyverse_transactions');
+    return savedTransactions ? JSON.parse(savedTransactions) : [];
+  });
+
+  // Lưu balance vào localStorage khi thay đổi
+  useEffect(() => {
+    localStorage.setItem('moneyverse_balance', balance.toString());
+  }, [balance]);
+
+  // Lưu bills vào localStorage khi thay đổi
+  useEffect(() => {
+    localStorage.setItem('moneyverse_bills', JSON.stringify(bills));
+  }, [bills]);
+
+  // Lưu transactions vào localStorage khi thay đổi
+  useEffect(() => {
+    localStorage.setItem('moneyverse_transactions', JSON.stringify(transactions));
+  }, [transactions]);
   // ----------------------------------------------------------
 
   return (

@@ -236,45 +236,70 @@ const Bills = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills, tr
 
       {selectedBill && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-sm w-full p-6 space-y-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-sm w-full p-6 space-y-4 animate-fade-in">
             <div className="text-center">
               <div className="w-16 h-16 rounded-full bg-orange-100 dark:bg-orange-950/30 text-orange-600 flex items-center justify-center text-3xl mx-auto mb-4">
                 {selectedBill.name.includes('học') ? '🎓' : selectedBill.name.includes('điện') ? '⚡' : '🌐'}
               </div>
-              <h3 className="font-bold text-lg text-gray-800 dark:text-white">{selectedBill.name}</h3>
-              <p className="text-sm text-gray-500 mt-1">{selectedBill.provider}</p>
+              <h3 className="font-bold text-lg text-gray-800 dark:text-white">Xác nhận thanh toán</h3>
+              <p className="text-sm text-gray-500 mt-1">{selectedBill.name}</p>
             </div>
 
-            <div className="space-y-2 bg-gray-50 dark:bg-gray-900 rounded-xl p-4">
+            <div className="space-y-3 bg-gray-50 dark:bg-gray-900 rounded-xl p-4">
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Nhà cung cấp</span>
+                <span className="font-semibold text-gray-800 dark:text-gray-200">{selectedBill.provider}</span>
+              </div>
               <div className="flex justify-between">
                 <span className="text-gray-600 dark:text-gray-400">Số tiền</span>
-                <span className="font-bold text-gray-800 dark:text-gray-200">{formatCurrency(selectedBill.amount)}</span>
+                <span className="font-bold text-lg text-gray-800 dark:text-gray-200">{formatCurrency(selectedBill.amount)}</span>
               </div>
+              <div className="h-px bg-gray-200 dark:bg-gray-700"></div>
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Hạn thanh toán</span>
-                <span className="font-semibold text-gray-800 dark:text-gray-200">{selectedBill.dueDate}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Số dư</span>
-                <span className={`font-bold ${balance >= selectedBill.amount ? 'text-emerald-600' : 'text-red-600'}`}>
+                <span className="text-gray-600 dark:text-gray-400">Số dư hiện tại</span>
+                <span className={`font-bold ${balance >= selectedBill.amount ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
                   {formatCurrency(balance)}
                 </span>
               </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Số dư sau khi thanh toán</span>
+                <span className={`font-bold ${balance - selectedBill.amount >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                  {formatCurrency(Math.max(0, balance - selectedBill.amount))}
+                </span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-600 dark:text-gray-400">Hạn thanh toán</span>
+                <span className="text-gray-800 dark:text-gray-200">{selectedBill.dueDate}</span>
+              </div>
             </div>
+
+            {balance < selectedBill.amount && (
+              <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 rounded-lg px-4 py-3 text-sm">
+                ⚠️ Số dư không đủ. Bạn cần thêm {formatCurrency(selectedBill.amount - balance)}
+              </div>
+            )}
 
             <div className="flex gap-3">
               <button
                 onClick={() => setSelectedBill(null)}
-                className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                disabled={isProcessing}
+                className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition-colors"
               >
                 Hủy
               </button>
               <button
                 onClick={() => handlePayBill(selectedBill)}
                 disabled={isProcessing || balance < selectedBill.amount}
-                className="flex-1 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white font-semibold transition-colors"
+                className="flex-1 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold transition-colors flex items-center justify-center gap-2"
               >
-                {isProcessing ? 'Đang xử lý...' : 'Xác nhận thanh toán'}
+                {isProcessing ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Đang xử lý...</span>
+                  </>
+                ) : (
+                  'Xác nhận thanh toán'
+                )}
               </button>
             </div>
           </div>
