@@ -2,21 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DarkModeToggle from '../components/DarkModeToggle';
 
-const TransactionHistory = ({ darkMode, setDarkMode }) => {
+// ĐÃ SỬA: Nhận mảng `transactions` từ props (được truyền từ App.js xuống)
+const TransactionHistory = ({ darkMode, setDarkMode, transactions }) => {
   const navigate = useNavigate();
   
-  // Dữ liệu mẫu lịch sử giao dịch (bao gồm cả thu và chi)
-  const [transactions, setTransactions] = useState([
-    { id: 'TX1001', name: 'Nhận lương tháng 7', amount: 15000000, type: 'income', category: 'Lương', date: '10/07/2026 08:30', status: 'success', icon: '💵' },
-    { id: 'TX1002', name: 'Tiền học phí', amount: 2000000, type: 'expense', category: 'Giáo dục', date: '08/07/2026 14:15', status: 'success', icon: '🎓' },
-    { id: 'TX1003', name: 'Tiền điện tháng 6', amount: 450000, type: 'expense', category: 'Dịch vụ', date: '05/07/2026 19:00', status: 'success', icon: '⚡' },
-    { id: 'TX1004', name: 'Hoàn tiền hóa đơn', amount: 50000, type: 'income', category: 'Khuyến mãi', date: '05/07/2026 19:02', status: 'success', icon: '🎁' },
-    { id: 'TX1005', name: 'Trà sữa KOI Thé', amount: 65000, type: 'expense', category: 'Ăn uống', date: '03/07/2026 15:45', status: 'success', icon: '🧋' },
-    { id: 'TX1006', name: 'Mua tài liệu học tập', amount: 120000, type: 'expense', category: 'Giáo dục', date: '01/07/2026 10:20', status: 'success', icon: '📚' },
-    { id: 'TX1007', name: 'Internet cáp quang VNPT', amount: 275000, type: 'expense', category: 'Dịch vụ', date: '28/06/2026 09:00', status: 'success', icon: '🌐' },
-    { id: 'TX1008', name: 'Bố mẹ gửi tiền sinh hoạt', amount: 5000000, type: 'income', category: 'Thu nhập khác', date: '25/06/2026 16:30', status: 'success', icon: '🏦' },
-  ]);
-
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all'); // 'all' | 'income' | 'expense'
 
@@ -26,19 +15,24 @@ const TransactionHistory = ({ darkMode, setDarkMode }) => {
   };
 
   // Tính toán thống kê nhanh từ danh sách hiển thị
-  const totalIncome = transactions
+  const totalIncome = (transactions || [])
     .filter(t => t.type === 'income')
     .reduce((sum, item) => sum + item.amount, 0);
 
-  const totalExpense = transactions
+  const totalExpense = (transactions || [])
     .filter(t => t.type === 'expense')
     .reduce((sum, item) => sum + item.amount, 0);
 
-  // Xử lý tìm kiếm và lọc dữ liệu
-  const filteredTransactions = transactions.filter(t => {
-    const matchesSearch = t.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          t.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          t.category.toLowerCase().includes(searchTerm.toLowerCase());
+  // 👉 ĐÃ SỬA LỖI TÌM KIẾM: An toàn hơn với kiểu dữ liệu số (Number) và Undefined
+  const filteredTransactions = (transactions || []).filter(t => {
+    // Tối ưu: Đưa toLowerCase() ra ngoài để không phải tính lại ở mỗi điều kiện
+    const searchLower = searchTerm.toLowerCase(); 
+    
+    const matchesSearch = 
+      String(t.name || '').toLowerCase().includes(searchLower) || 
+      String(t.id || '').toLowerCase().includes(searchLower) ||
+      String(t.category || '').toLowerCase().includes(searchLower);
+      
     const matchesType = filterType === 'all' ? true : t.type === filterType;
     return matchesSearch && matchesType;
   });
@@ -89,7 +83,7 @@ const TransactionHistory = ({ darkMode, setDarkMode }) => {
           <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex justify-between items-center">
             <div>
               <p className="text-xs text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider">Tổng số giao dịch</p>
-              <h3 className="text-2xl font-bold text-gray-800 dark:text-white mt-1">{transactions.length}</h3>
+              <h3 className="text-2xl font-bold text-gray-800 dark:text-white mt-1">{(transactions || []).length}</h3>
             </div>
             <div className="w-12 h-12 bg-purple-50 dark:bg-purple-950/30 rounded-xl flex items-center justify-center text-purple-600 dark:text-purple-400 text-xl">📋</div>
           </div>

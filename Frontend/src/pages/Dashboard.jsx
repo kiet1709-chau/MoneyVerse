@@ -2,17 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DarkModeToggle from '../components/DarkModeToggle';
 
-const Dashboard = ({ darkMode, setDarkMode }) => {
+// Nhận thêm các props balance, setBalance, bills, setBills từ App.js
+const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills, transactions, setTransactions }) => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
-  const [balance, setBalance] = useState(25000000);
-  const [bills, setBills] = useState([
-    { id: 1, name: 'Tiền học phí', amount: 2000000, dueDate: '15/07/2026', status: 'pending', provider: 'Đại học' },
-    { id: 2, name: 'Tiền điện tháng 6', amount: 450000, dueDate: '20/07/2026', status: 'pending', provider: 'EVN' },
-    { id: 3, name: 'Internet cáp quang', amount: 275000, dueDate: '22/07/2026', status: 'pending', provider: 'VNPT' },
-  ]);
-
   const [isBillCenterOpen, setIsBillCenterOpen] = useState(false);
   const [selectedBill, setSelectedBill] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
@@ -21,6 +15,9 @@ const Dashboard = ({ darkMode, setDarkMode }) => {
   const pendingBills = bills.filter(b => b.status === 'pending');
   const pendingCount = pendingBills.length;
 
+  // Lấy ra 4 giao dịch gần nhất từ mảng chung để hiển thị
+  const recentTransactions = (transactions || []).slice(0, 4);
+
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
   };
@@ -28,8 +25,36 @@ const Dashboard = ({ darkMode, setDarkMode }) => {
   const handleConfirmPayment = () => {
     setIsProcessing(true);
     setTimeout(() => {
+      // Trừ tiền
       setBalance(prev => prev - selectedBill.amount);
-      setBills(prev => prev.map(bill => bill.id === selectedBill.id ? { ...bill, status: 'paid' } : bill));
+      
+      // Cập nhật trạng thái 'paid' và thêm ngày thanh toán hiện tại
+      const currentDate = new Date().toLocaleDateString('vi-VN');
+      setBills(prev => prev.map(bill => 
+        bill.id === selectedBill.id 
+          ? { ...bill, status: 'paid', date: currentDate } 
+          : bill
+      ));
+
+      // Tạo record lịch sử và đẩy vào mảng transactions chung
+      const newTx = {
+        id: `TX${Date.now().toString().slice(-4)}`,
+        name: `Thanh toán ${selectedBill.name}`,
+        amount: selectedBill.amount,
+        type: 'expense', // Loại chi tiêu để hiển thị dấu trừ
+        category: selectedBill.provider || 'Hóa đơn',
+        date: new Date().toLocaleString('vi-VN', { 
+          day: '2-digit', month: '2-digit', year: 'numeric', 
+          hour: '2-digit', minute: '2-digit' 
+        }).replace(',', ''),
+        status: 'success',
+        // Tự động lấy icon giống với bill
+        icon: selectedBill.name.includes('học') ? '🎓' : selectedBill.name.includes('điện') ? '⚡' : '🌐'
+      };
+      
+      // Đẩy giao dịch mới lên đầu danh sách
+      setTransactions(prev => [newTx, ...prev]);
+
       setToastMessage(`Đã thanh toán thành công ${formatCurrency(selectedBill.amount)} cho ${selectedBill.name}`);
       setSelectedBill(null);
       setIsProcessing(false);
@@ -45,10 +70,9 @@ const Dashboard = ({ darkMode, setDarkMode }) => {
     navigate('/login');
   };
 
-  // ĐÃ CẬP NHẬT: Thêm trường `path` để điều hướng
   const menuItems = [
     { name: 'Tổng quan ví', icon: '💳', path: '/dashboard' },
-    { name: 'Lịch sử giao dịch', icon: '📋', path: '/transaction-history' },
+    { name: 'Lịch sử giao dịch', icon: '📋', path: '/transaction-history' }, 
     { name: 'Thống kê chi tiêu', icon: '📊', path: '#' },
     { name: 'Cài đặt bảo mật', icon: '🛡️', path: '#' },
   ];
@@ -79,7 +103,6 @@ const Dashboard = ({ darkMode, setDarkMode }) => {
             {menuItems.map((item) => (
               <button 
                 key={item.name} 
-                // ĐÃ CẬP NHẬT: Thêm sự kiện onClick để chuyển trang
                 onClick={() => {
                   if (item.path !== '#') {
                     navigate(item.path);
@@ -137,6 +160,7 @@ const Dashboard = ({ darkMode, setDarkMode }) => {
         </header>
 
         <main className="p-6 md:p-8 flex-1 max-w-6xl mx-auto w-full space-y-6">
+          
           {/* Card Số dư */}
           <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-6 shadow-xl text-white relative overflow-hidden">
             <div className="absolute top-0 right-0 -mr-8 -mt-8 w-40 h-40 rounded-full bg-white opacity-10"></div>
@@ -146,10 +170,42 @@ const Dashboard = ({ darkMode, setDarkMode }) => {
               <button className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg> Nạp tiền
               </button>
-              <button className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
+              {/* ĐÃ THÊM SỰ KIỆN NÚT CHUYỂN KHOẢN TRONG CARD */}
+              <button 
+                onClick={() => navigate('/transfer')}
+                className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+              >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg> Chuyển khoản
               </button>
             </div>
+          </div>
+
+          {/* 👉 ĐÃ THÊM: Khu vực Thao tác nhanh */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Nút Chuyển Khoản mà bạn cung cấp */}
+            <button 
+              onClick={() => navigate('/transfer')}
+              className="flex flex-col items-center justify-center p-4 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-2xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors shadow-sm"
+            >
+              <span className="text-2xl mb-2">💸</span>
+              <span className="font-semibold text-sm">Chuyển khoản</span>
+            </button>
+            
+            {/* Thêm một số nút tiện ích cho đồng bộ giao diện */}
+            <button className="flex flex-col items-center justify-center p-4 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-2xl hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors shadow-sm">
+              <span className="text-2xl mb-2">📥</span>
+              <span className="font-semibold text-sm">Nạp tiền</span>
+            </button>
+            
+            <button className="flex flex-col items-center justify-center p-4 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-2xl hover:bg-orange-100 dark:hover:bg-orange-900/40 transition-colors shadow-sm">
+              <span className="text-2xl mb-2">📱</span>
+              <span className="font-semibold text-sm">Nạp ĐT</span>
+            </button>
+            
+            <button onClick={() => setIsBillCenterOpen(true)} className="flex flex-col items-center justify-center p-4 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-2xl hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors shadow-sm">
+              <span className="text-2xl mb-2">🧾</span>
+              <span className="font-semibold text-sm">Hóa đơn</span>
+            </button>
           </div>
 
           {/* Grid Thống Kê & Giao Dịch */}
@@ -168,11 +224,10 @@ const Dashboard = ({ darkMode, setDarkMode }) => {
             </div>
 
             <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-              {/* ĐÃ CẬP NHẬT: Thêm nút Xem tất cả */}
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-bold text-lg text-gray-800 dark:text-white">Giao dịch gần đây</h3>
                 <button 
-                  onClick={() => navigate('/transactions')} 
+                  onClick={() => navigate('/transaction-history')} 
                   className="text-sm text-purple-600 dark:text-purple-400 font-medium hover:underline"
                 >
                   Xem tất cả
@@ -180,21 +235,25 @@ const Dashboard = ({ darkMode, setDarkMode }) => {
               </div>
               
               <div className="space-y-4">
-                {bills.filter(b => b.status === 'paid').length === 0 ? (
+                {recentTransactions.length === 0 ? (
                   <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-8">Chưa có giao dịch nào</p>
                 ) : (
-                  bills.filter(b => b.status === 'paid').map(bill => (
-                    <div key={bill.id} className="flex justify-between items-center p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-xl transition-colors">
+                  recentTransactions.map(t => (
+                    <div key={t.id} className="flex justify-between items-center p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-xl transition-colors">
                       <div className="flex gap-3 items-center">
-                        <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 text-red-500 flex items-center justify-center">
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl ${
+                          t.type === 'income' ? 'bg-green-100 dark:bg-green-900/30 text-green-500' : 'bg-red-100 dark:bg-red-900/30 text-red-500'
+                        }`}>
+                          {t.icon || '💸'}
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-800 dark:text-gray-200 text-sm">{bill.name}</p>
-                          <p className="text-xs text-gray-500">{bill.provider}</p>
+                          <p className="font-semibold text-gray-800 dark:text-gray-200 text-sm">{t.name}</p>
+                          <p className="text-xs text-gray-500">{t.category} • {t.date.split(' ')[0]}</p>
                         </div>
                       </div>
-                      <span className="font-bold text-gray-800 dark:text-gray-200 text-sm">-{formatCurrency(bill.amount)}</span>
+                      <span className={`font-bold text-sm ${t.type === 'income' ? 'text-green-500' : 'text-gray-800 dark:text-gray-200'}`}>
+                        {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
+                      </span>
                     </div>
                   ))
                 )}

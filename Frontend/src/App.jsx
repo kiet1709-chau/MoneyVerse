@@ -9,6 +9,8 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 import TransactionHistory from './pages/TransactionHistory';
+import Transfer from './pages/Transfer';
+
 function App() {
   // Quản lý trạng thái Dark Mode ở cấp cao nhất
   const [darkMode, setDarkMode] = useState(() => {
@@ -27,6 +29,18 @@ function App() {
     }
   }, [darkMode]);
 
+  // --- THÊM MỚI: State quản lý Số dư và Hóa đơn/Giao dịch ---
+  const [balance, setBalance] = useState(25000000);
+  const [bills, setBills] = useState([
+    { id: 1, name: 'Tiền học phí', amount: 2000000, dueDate: '15/07/2026', status: 'pending', provider: 'Đại học', date: '' },
+    { id: 2, name: 'Tiền điện tháng 6', amount: 450000, dueDate: '20/07/2026', status: 'pending', provider: 'EVN', date: '' },
+    { id: 3, name: 'Internet cáp quang', amount: 275000, dueDate: '22/07/2026', status: 'pending', provider: 'VNPT', date: '' },
+  ]);
+  
+  // 👉 ĐÃ SỬA LỖI: Khai báo mảng transactions để tránh lỗi undefined làm crash app
+  const [transactions, setTransactions] = useState([]);
+  // ----------------------------------------------------------
+
   return (
     <Router>
       <Routes>
@@ -43,11 +57,49 @@ function App() {
         />
         <Route 
           path="/dashboard" 
-          element={<Dashboard darkMode={darkMode} setDarkMode={setDarkMode} />} 
+          element={
+            <Dashboard 
+              darkMode={darkMode} 
+              setDarkMode={setDarkMode} 
+              // Truyền state xuống Dashboard
+              balance={balance}
+              setBalance={setBalance}
+              bills={bills}
+              setBills={setBills}
+              transactions={transactions}
+              setTransactions={setTransactions}
+            />
+          } 
         />
         <Route 
           path="/transaction-history" 
-          element={<TransactionHistory darkMode={darkMode} setDarkMode={setDarkMode} />} 
+          element={
+            <TransactionHistory 
+              darkMode={darkMode} 
+              setDarkMode={setDarkMode}
+              // 👉 ĐÃ SỬA LỖI: Truyền cả transactions và bills xuống để trang Lịch sử có thể sử dụng
+              transactions={transactions}
+              bills={bills} 
+            />
+          } 
+        />
+        <Route 
+    path="/transfer" 
+    element={
+      <Transfer 
+        darkMode={darkMode} 
+        setDarkMode={setDarkMode}
+        balance={balance}
+        setBalance={setBalance}
+        transactions={transactions}
+        setTransactions={setTransactions}
+      />
+    } 
+  />
+        {/* THÊM MỚI: Bắt các route không tồn tại và hiển thị trang NotFound */}
+        <Route 
+          path="*" 
+          element={<NotFound darkMode={darkMode} setDarkMode={setDarkMode} />} 
         />
       </Routes>
     </Router>
