@@ -39,9 +39,8 @@ const Settings = ({ darkMode, setDarkMode }) => {
     setSaveMessage('✓ Cài đặt đã được lưu thành công');
     setMessageType('success');
     setTimeout(() => {
-      setSaveMessage('');
-      setMessageType('');
-    }, 3000);
+      navigate('/profile');
+    }, 1500);
   };
 
   const updateSetting = (path, value) => {

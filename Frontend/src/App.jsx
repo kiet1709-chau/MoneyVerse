@@ -20,6 +20,7 @@ import SavingsGoals from './pages/SavingsGoals';
 import MovieTickets from './pages/MovieTickets';
 import TravelBooking from './pages/TravelBooking';
 import Settings from './pages/Settings';
+import SidebarLayout from './components/SidebarLayout';
 
 function App() {
   // Quản lý trạng thái Dark Mode ở cấp cao nhất
@@ -91,34 +92,78 @@ function App() {
           path="/register" 
           element={<Register darkMode={darkMode} setDarkMode={setDarkMode} />} 
         />
-        <Route 
-          path="/dashboard" 
-          element={
-            <Dashboard 
-              darkMode={darkMode} 
-              setDarkMode={setDarkMode} 
-              // Truyền state xuống Dashboard
-              balance={balance}
-              setBalance={setBalance}
-              bills={bills}
-              setBills={setBills}
-              transactions={transactions}
-              setTransactions={setTransactions}
-            />
-          } 
-        />
-        <Route 
-          path="/transaction-history" 
-          element={
-            <TransactionHistory 
-              darkMode={darkMode} 
-              setDarkMode={setDarkMode}
-              // 👉 ĐÃ SỬA LỖI: Truyền cả transactions và bills xuống để trang Lịch sử có thể sử dụng
-              transactions={transactions}
-              bills={bills} 
-            />
-          } 
-        />
+        <Route element={<SidebarLayout darkMode={darkMode} setDarkMode={setDarkMode} />}>
+          <Route
+            index
+            element={
+              <Dashboard
+                darkMode={darkMode}
+                setDarkMode={setDarkMode}
+                balance={balance}
+                setBalance={setBalance}
+                bills={bills}
+                setBills={setBills}
+                transactions={transactions}
+                setTransactions={setTransactions}
+              />
+            }
+          />
+          <Route
+            path="dashboard"
+            element={
+              <Dashboard
+                darkMode={darkMode}
+                setDarkMode={setDarkMode}
+                balance={balance}
+                setBalance={setBalance}
+                bills={bills}
+                setBills={setBills}
+                transactions={transactions}
+                setTransactions={setTransactions}
+              />
+            }
+          />
+          <Route
+            path="transaction-history"
+            element={
+              <TransactionHistory
+                darkMode={darkMode}
+                setDarkMode={setDarkMode}
+                transactions={transactions}
+                bills={bills}
+              />
+            }
+          />
+          <Route
+            path="spending-statistics"
+            element={
+              <SpendingStatistics
+                darkMode={darkMode}
+                setDarkMode={setDarkMode}
+                transactions={transactions}
+                bills={bills}
+              />
+            }
+          />
+          <Route
+            path="security-settings"
+            element={
+              <SecuritySettings
+                darkMode={darkMode}
+                setDarkMode={setDarkMode}
+              />
+            }
+          />
+          <Route
+            path="savings-goals"
+            element={
+              <SavingsGoals
+                darkMode={darkMode}
+                setDarkMode={setDarkMode}
+              />
+            }
+          />
+        </Route>
         <Route 
           path="/transfer" 
           element={
@@ -131,26 +176,6 @@ function App() {
               setTransactions={setTransactions}
             />
           } 
-        />
-        <Route 
-          path="/spending-statistics" 
-          element={
-            <SpendingStatistics
-              darkMode={darkMode}
-              setDarkMode={setDarkMode}
-              transactions={transactions}
-              bills={bills}
-            />
-          }
-        />
-        <Route 
-          path="/security-settings" 
-          element={
-            <SecuritySettings
-              darkMode={darkMode}
-              setDarkMode={setDarkMode}
-            />
-          }
         />
         <Route 
           path="/mobile-top-up" 
@@ -206,15 +231,6 @@ function App() {
           path="/settings" 
           element={
             <Settings
-              darkMode={darkMode}
-              setDarkMode={setDarkMode}
-            />
-          }
-        />
-        <Route 
-          path="/savings-goals" 
-          element={
-            <SavingsGoals
               darkMode={darkMode}
               setDarkMode={setDarkMode}
             />

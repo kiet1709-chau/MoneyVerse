@@ -99,7 +99,7 @@ const MobileTopUp = ({ darkMode, setDarkMode, balance, setBalance, transactions,
       // Reset form
       setPhone('');
       setAmount('50000');
-    } catch (error) {
+    } catch {
       setMessage('Nạp tiền thất bại. Vui lòng thử lại.');
       setMessageType('error');
     } finally {

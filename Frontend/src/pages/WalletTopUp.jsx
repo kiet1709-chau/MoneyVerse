@@ -76,7 +76,7 @@ const WalletTopUp = ({ darkMode, setDarkMode, balance, setBalance, transactions,
       setMessage(`✓ Nạp tiền thành công ${formatCurrency(numericAmount)} bằng ${methodName}. Mã: ${newTx.id}`);
       setMessageType('success');
       setAmount('100000');
-    } catch (error) {
+    } catch {
       setMessage('Nạp tiền thất bại. Vui lòng thử lại.');
       setMessageType('error');
     } finally {
