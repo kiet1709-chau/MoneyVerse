@@ -115,7 +115,7 @@ const MobileTopUp = ({ darkMode, setDarkMode, balance, setBalance, transactions,
             onClick={() => navigate('/dashboard')}
             className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-1 font-medium"
           >
-            ← <span className="hidden sm:inline">Quay lại Dashboard</span>
+            ← <span className="hidden sm:inline">Quay lại Trang chủ</span>
           </button>
           <h1 className="text-xl font-bold text-gray-800 dark:text-white border-l pl-3 border-gray-300 dark:border-gray-600">
             Nạp điện thoại

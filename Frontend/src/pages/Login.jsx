@@ -10,9 +10,10 @@ const Login = ({ darkMode, setDarkMode }) => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (username === 'admin' && password === '123456') {
+    const savedUser = JSON.parse(localStorage.getItem('moneyverse_user') || 'null');
+    if ((savedUser && username === savedUser.username && password === savedUser.password) || (username === 'admin' && password === '123456')) {
       setAuthError('');
-      navigate('/dashboard'); // Điều hướng sang Dashboard
+      navigate('/setup-balance');
     } else {
       setAuthError('Tài khoản hoặc mật khẩu không đúng! (Gợi ý: admin / 123456)');
     }
@@ -24,7 +25,6 @@ const Login = ({ darkMode, setDarkMode }) => {
       <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
 
       <div className="absolute top-6 right-6 flex items-center gap-3 z-10 bg-white/50 dark:bg-gray-800/50 backdrop-blur-md px-4 py-2 rounded-full shadow-sm">
-        <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">Chế độ tối</span>
         <DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
       </div>
 

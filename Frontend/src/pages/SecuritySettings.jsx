@@ -17,7 +17,7 @@ const SecuritySettings = ({ darkMode, setDarkMode }) => {
             onClick={() => navigate('/dashboard')}
             className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-1 font-medium"
           >
-            ← <span className="hidden sm:inline">Quay lại Dashboard</span>
+            ← <span className="hidden sm:inline">Quay lại Trang chủ</span>
           </button>
           <h1 className="text-xl font-bold text-gray-800 dark:text-white border-l pl-3 border-gray-300 dark:border-gray-600">
             Cài đặt bảo mật
@@ -105,7 +105,7 @@ const SecuritySettings = ({ darkMode, setDarkMode }) => {
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between rounded-xl border border-gray-100 dark:border-gray-700 p-4">
+                <div className="hidden flex items-center justify-between rounded-xl border border-gray-100 dark:border-gray-700 p-4">
                   <div>
                     <p className="font-semibold text-gray-800 dark:text-gray-200">Sinh trắc học</p>
                     <p className="text-sm text-gray-500">Dùng vân tay hoặc Face ID để mở khóa nhanh.</p>
@@ -156,7 +156,7 @@ const SecuritySettings = ({ darkMode, setDarkMode }) => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl p-6 text-white shadow-sm">
+            <div className="bg-amber-600 rounded-2xl p-6 text-white shadow-sm">
               <h3 className="font-bold text-lg">Mẹo bảo mật</h3>
               <ul className="mt-3 space-y-2 text-sm text-white/90">
                 <li>• Không chia sẻ mã OTP với bất kỳ ai.</li>

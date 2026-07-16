@@ -6,7 +6,7 @@ const SidebarLayout = ({ darkMode, setDarkMode }) => {
   const navigate = useNavigate();
 
   const menuItems = [
-    { name: 'Tổng quan ví', icon: '💳', path: '/dashboard' },
+    { name: 'Trang chủ', icon: '💳', path: '/dashboard' },
     { name: 'Lịch sử giao dịch', icon: '📋', path: '/transaction-history' },
     { name: 'Thống kê chi tiêu', icon: '📊', path: '/spending-statistics' },
     { name: 'Heo tiết kiệm', icon: '🐷', path: '/savings-goals' },
@@ -44,13 +44,13 @@ const SidebarLayout = ({ darkMode, setDarkMode }) => {
         </div>
 
         <div className="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-2">
-          <div className="flex items-center justify-between px-2 py-2">
+          <div className="hidden flex items-center justify-between px-2 py-2">
             <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">Chế độ tối</span>
             <DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
           </div>
           <button
             onClick={() => navigate('/profile')}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 font-semibold text-sm transition-all text-left"
+            className="hidden w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 font-semibold text-sm transition-all text-left"
           >
             <span className="text-xl">👤</span>
             <span>Tài khoản cá nhân</span>

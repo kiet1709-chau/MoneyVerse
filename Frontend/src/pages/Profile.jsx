@@ -5,14 +5,15 @@ import DarkModeToggle from '../components/DarkModeToggle';
 const Profile = ({ darkMode, setDarkMode }) => {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
-  const [userInfo, setUserInfo] = useState({
+  const defaultUser = {
     name: 'Nguyễn Văn A',
     email: 'user@example.com',
     phone: '0987654321',
     address: 'Hà Nội, Việt Nam',
     dob: '01/01/2000',
     gender: 'Nam',
-  });
+  };
+  const [userInfo, setUserInfo] = useState(() => ({ ...defaultUser, ...JSON.parse(localStorage.getItem('moneyverse_user') || 'null') }));
 
   const [formData, setFormData] = useState(userInfo);
 
@@ -23,6 +24,7 @@ const Profile = ({ darkMode, setDarkMode }) => {
 
   const handleSaveChanges = () => {
     setUserInfo(formData);
+    localStorage.setItem('moneyverse_user', JSON.stringify(formData));
     setIsEditing(false);
   };
 
@@ -40,7 +42,7 @@ const Profile = ({ darkMode, setDarkMode }) => {
             onClick={() => navigate('/dashboard')}
             className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-1 font-medium"
           >
-            ← <span className="hidden sm:inline">Quay lại Dashboard</span>
+            ← <span className="hidden sm:inline">Quay lại Trang chủ</span>
           </button>
           <h1 className="text-xl font-bold text-gray-800 dark:text-white border-l pl-3 border-gray-300 dark:border-gray-600">
             Trang cá nhân
@@ -196,7 +198,7 @@ const Profile = ({ darkMode, setDarkMode }) => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-red-500 to-pink-500 rounded-2xl p-6 text-white shadow-sm">
+            <div className="bg-red-600 rounded-2xl p-6 text-white shadow-sm">
               <h3 className="font-bold text-lg mb-3">Đăng xuất</h3>
               <p className="text-sm text-white/80 mb-4">Bạn muốn thoát khỏi tài khoản này?</p>
               <button

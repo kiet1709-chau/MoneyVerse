@@ -106,7 +106,7 @@ const Settings = ({ darkMode, setDarkMode }) => {
               <p className="font-semibold text-gray-800 dark:text-gray-200">Chế độ tối</p>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Bảo vệ mắt trong môi trường ánh sáng yếu</p>
             </div>
-            <DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
+            <DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} visible />
           </div>
 
           {/* Kích thước chữ */}

@@ -6,9 +6,9 @@ const SavingsGoals = ({ darkMode, setDarkMode }) => {
   const navigate = useNavigate();
   const [showAddGoal, setShowAddGoal] = useState(false);
   const [goals, setGoals] = useState([
-    { id: 1, name: 'Du lịch Nhật Bản', target: 50000000, current: 15000000, icon: '✈️', color: 'from-blue-500 to-cyan-400' },
-    { id: 2, name: 'Mua laptop mới', target: 30000000, current: 8500000, icon: '💻', color: 'from-purple-500 to-violet-500' },
-    { id: 3, name: 'Quỹ khẩn cấp', target: 20000000, current: 12000000, icon: '🆘', color: 'from-red-500 to-orange-400' },
+    { id: 1, name: 'Du lịch Nhật Bản', target: 50000000, current: 15000000, icon: '✈️', color: 'bg-sky-600' },
+    { id: 2, name: 'Mua laptop mới', target: 30000000, current: 8500000, icon: '💻', color: 'bg-blue-800' },
+    { id: 3, name: 'Quỹ khẩn cấp', target: 20000000, current: 12000000, icon: '🆘', color: 'bg-red-600' },
   ]);
 
   const [newGoal, setNewGoal] = useState({
@@ -31,7 +31,7 @@ const SavingsGoals = ({ darkMode, setDarkMode }) => {
       target: Number(newGoal.target),
       current: Number(newGoal.current || 0),
       icon: newGoal.icon,
-      color: 'from-indigo-500 to-purple-500',
+      color: 'bg-sky-600',
     };
 
     setGoals((prev) => [goal, ...prev]);
@@ -61,7 +61,7 @@ const SavingsGoals = ({ darkMode, setDarkMode }) => {
             onClick={() => navigate('/dashboard')}
             className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-1 font-medium"
           >
-            ← <span className="hidden sm:inline">Quay lại Dashboard</span>
+            ← <span className="hidden sm:inline">Quay lại Trang chủ</span>
           </button>
           <h1 className="text-xl font-bold text-gray-800 dark:text-white border-l pl-3 border-gray-300 dark:border-gray-600">
             Heo tiết kiệm
@@ -77,7 +77,7 @@ const SavingsGoals = ({ darkMode, setDarkMode }) => {
       </header>
 
       <main className="p-6 md:p-8 max-w-6xl mx-auto space-y-6">
-        <section className="bg-gradient-to-r from-pink-500 via-rose-500 to-red-500 rounded-3xl p-6 md:p-8 text-white shadow-xl">
+        <section className="bg-sky-700 rounded-3xl p-6 md:p-8 text-white shadow-xl">
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-sm uppercase tracking-[0.25em] text-white/80">Quản lý mục tiêu tiết kiệm</p>
@@ -147,7 +147,7 @@ const SavingsGoals = ({ darkMode, setDarkMode }) => {
                 <div key={goal.id} className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 space-y-4">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${goal.color} flex items-center justify-center text-2xl`}>
+                      <div className={`w-12 h-12 rounded-full ${goal.color} flex items-center justify-center text-2xl`}>
                         {goal.icon}
                       </div>
                       <div>
@@ -169,7 +169,7 @@ const SavingsGoals = ({ darkMode, setDarkMode }) => {
                       <span className="font-semibold text-gray-800 dark:text-gray-200">{formatCurrency(goal.current)}</span>
                     </div>
                     <div className="w-full h-3 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                      <div className={`h-full bg-gradient-to-r ${goal.color}`} style={{ width: `${progress}%` }}></div>
+                      <div className={`h-full ${goal.color}`} style={{ width: `${progress}%` }}></div>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600 dark:text-gray-300">Mục tiêu: {formatCurrency(goal.target)}</span>

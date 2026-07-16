@@ -9,7 +9,6 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 import TransactionHistory from './pages/TransactionHistory';
-import Transfer from './pages/Transfer';
 import SpendingStatistics from './pages/SpendingStatistics';
 import SecuritySettings from './pages/SecuritySettings';
 import MobileTopUp from './pages/MobileTopUp';
@@ -20,6 +19,7 @@ import SavingsGoals from './pages/SavingsGoals';
 import MovieTickets from './pages/MovieTickets';
 import TravelBooking from './pages/TravelBooking';
 import Settings from './pages/Settings';
+import BalanceSetup from './pages/BalanceSetup';
 import SidebarLayout from './components/SidebarLayout';
 
 function App() {
@@ -59,7 +59,12 @@ function App() {
   // 👉 ĐÃ SỬA LỖI: Khai báo mảng transactions để tránh lỗi undefined làm crash app
   const [transactions, setTransactions] = useState(() => {
     const savedTransactions = localStorage.getItem('moneyverse_transactions');
-    return savedTransactions ? JSON.parse(savedTransactions) : [];
+    return savedTransactions ? JSON.parse(savedTransactions) : [
+      { id: 'sample-1', name: 'Nhận lương tháng', category: 'Thu nhập', amount: 30000000, type: 'income', date: '01/07/2026', icon: '💰' },
+      { id: 'sample-2', name: 'Thanh toán tiền điện', category: 'Dịch vụ', amount: 450000, type: 'expense', date: '05/07/2026', icon: '🧾' },
+      { id: 'sample-3', name: 'Mua sắm siêu thị', category: 'Mua sắm', amount: 1250000, type: 'expense', date: '08/07/2026', icon: '🛍️' },
+      { id: 'sample-4', name: 'Ăn trưa', category: 'Ăn uống', amount: 85000, type: 'expense', date: '10/07/2026', icon: '🍜' },
+    ];
   });
 
   // Lưu balance vào localStorage khi thay đổi
@@ -92,6 +97,7 @@ function App() {
           path="/register" 
           element={<Register darkMode={darkMode} setDarkMode={setDarkMode} />} 
         />
+        <Route path="/setup-balance" element={<BalanceSetup setBalance={setBalance} />} />
         <Route element={<SidebarLayout darkMode={darkMode} setDarkMode={setDarkMode} />}>
           <Route
             index
@@ -140,6 +146,7 @@ function App() {
               <SpendingStatistics
                 darkMode={darkMode}
                 setDarkMode={setDarkMode}
+                balance={balance}
                 transactions={transactions}
                 bills={bills}
               />
@@ -164,19 +171,6 @@ function App() {
             }
           />
         </Route>
-        <Route 
-          path="/transfer" 
-          element={
-            <Transfer 
-              darkMode={darkMode} 
-              setDarkMode={setDarkMode}
-              balance={balance}
-              setBalance={setBalance}
-              transactions={transactions}
-              setTransactions={setTransactions}
-            />
-          } 
-        />
         <Route 
           path="/mobile-top-up" 
           element={
