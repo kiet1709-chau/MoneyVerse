@@ -1,23 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import './index.css';
 
 // Import các trang vừa tạo
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import AddTransaction from './pages/AddTransaction';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 import TransactionHistory from './pages/TransactionHistory';
 import SpendingStatistics from './pages/SpendingStatistics';
 import SecuritySettings from './pages/SecuritySettings';
-import MobileTopUp from './pages/MobileTopUp';
-import WalletTopUp from './pages/WalletTopUp';
 import Bills from './pages/Bills';
 import Profile from './pages/Profile';
 import SavingsGoals from './pages/SavingsGoals';
-import MovieTickets from './pages/MovieTickets';
-import TravelBooking from './pages/TravelBooking';
 import Settings from './pages/Settings';
 import BalanceSetup from './pages/BalanceSetup';
 import SidebarLayout from './components/SidebarLayout';
@@ -67,6 +65,11 @@ function App() {
     ];
   });
 
+  const [vouchers, setVouchers] = useState(() => {
+    const savedVouchers = localStorage.getItem('moneyverse_vouchers');
+    return savedVouchers ? JSON.parse(savedVouchers) : [];
+  });
+
   // Lưu balance vào localStorage khi thay đổi
   useEffect(() => {
     localStorage.setItem('moneyverse_balance', balance.toString());
@@ -81,6 +84,35 @@ function App() {
   useEffect(() => {
     localStorage.setItem('moneyverse_transactions', JSON.stringify(transactions));
   }, [transactions]);
+
+  useEffect(() => {
+    localStorage.setItem('moneyverse_vouchers', JSON.stringify(vouchers));
+  }, [vouchers]);
+
+  useEffect(() => {
+    const sendDailyEntryReminder = () => {
+      const savedSettings = localStorage.getItem('moneyverse_settings');
+      const settings = savedSettings ? JSON.parse(savedSettings) : null;
+      if (!settings?.notifications?.dailyEntryReminder) return;
+
+      const now = new Date();
+      if (now.getHours() !== 22) return;
+
+      const reminderKey = `moneyverse_daily_entry_reminder_${now.toLocaleDateString('vi-VN')}`;
+      if (localStorage.getItem(reminderKey)) return;
+
+      localStorage.setItem(reminderKey, 'sent');
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('MoneyVerse nhắc nhở nhập liệu', {
+          body: 'Đã 22:00. Hãy ghi lại các khoản thu chi hôm nay nhé!',
+        });
+      }
+    };
+
+    sendDailyEntryReminder();
+    const reminderInterval = window.setInterval(sendDailyEntryReminder, 60 * 1000);
+    return () => window.clearInterval(reminderInterval);
+  }, []);
   // ----------------------------------------------------------
 
   return (
@@ -97,6 +129,14 @@ function App() {
           path="/register" 
           element={<Register darkMode={darkMode} setDarkMode={setDarkMode} />} 
         />
+        <Route
+          path="/forgot-password"
+          element={<ForgotPassword darkMode={darkMode} setDarkMode={setDarkMode} />}
+        />
+        <Route
+          path="/add-transaction"
+          element={<AddTransaction darkMode={darkMode} setDarkMode={setDarkMode} balance={balance} setBalance={setBalance} setTransactions={setTransactions} />}
+        />
         <Route path="/setup-balance" element={<BalanceSetup setBalance={setBalance} />} />
         <Route element={<SidebarLayout darkMode={darkMode} setDarkMode={setDarkMode} />}>
           <Route
@@ -111,6 +151,8 @@ function App() {
                 setBills={setBills}
                 transactions={transactions}
                 setTransactions={setTransactions}
+                vouchers={vouchers}
+                setVouchers={setVouchers}
               />
             }
           />
@@ -126,6 +168,8 @@ function App() {
                 setBills={setBills}
                 transactions={transactions}
                 setTransactions={setTransactions}
+                vouchers={vouchers}
+                setVouchers={setVouchers}
               />
             }
           />
@@ -172,32 +216,6 @@ function App() {
           />
         </Route>
         <Route 
-          path="/mobile-top-up" 
-          element={
-            <MobileTopUp
-              darkMode={darkMode}
-              setDarkMode={setDarkMode}
-              balance={balance}
-              setBalance={setBalance}
-              transactions={transactions}
-              setTransactions={setTransactions}
-            />
-          }
-        />
-        <Route 
-          path="/wallet-top-up" 
-          element={
-            <WalletTopUp
-              darkMode={darkMode}
-              setDarkMode={setDarkMode}
-              balance={balance}
-              setBalance={setBalance}
-              transactions={transactions}
-              setTransactions={setTransactions}
-            />
-          }
-        />
-        <Route 
           path="/bills" 
           element={
             <Bills
@@ -227,32 +245,6 @@ function App() {
             <Settings
               darkMode={darkMode}
               setDarkMode={setDarkMode}
-            />
-          }
-        />
-        <Route 
-          path="/movie-tickets" 
-          element={
-            <MovieTickets
-              darkMode={darkMode}
-              setDarkMode={setDarkMode}
-              balance={balance}
-              setBalance={setBalance}
-              transactions={transactions}
-              setTransactions={setTransactions}
-            />
-          }
-        />
-        <Route 
-          path="/travel-booking" 
-          element={
-            <TravelBooking
-              darkMode={darkMode}
-              setDarkMode={setDarkMode}
-              balance={balance}
-              setBalance={setBalance}
-              transactions={transactions}
-              setTransactions={setTransactions}
             />
           }
         />

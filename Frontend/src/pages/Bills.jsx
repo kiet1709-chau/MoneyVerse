@@ -84,14 +84,14 @@ const Bills = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills, tr
 
         <div className="flex items-center gap-4">
           <DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
-          <div className="bg-gradient-to-r from-blue-400 to-indigo-500 w-10 h-10 rounded-full shadow-md border-2 border-white dark:border-gray-800 flex items-center justify-center font-bold text-white text-sm">
+          <button type="button" aria-label="Mở trang cá nhân" onClick={() => navigate('/profile')} className="bg-gradient-to-r from-blue-400 to-indigo-500 w-10 h-10 rounded-full cursor-pointer shadow-md border-2 border-white dark:border-gray-800 hover:opacity-80 transition-opacity flex items-center justify-center font-bold text-white text-sm">
             AD
-          </div>
+          </button>
         </div>
       </header>
 
       <main className="p-6 md:p-8 max-w-6xl mx-auto space-y-6">
-        <section className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 rounded-3xl p-6 md:p-8 text-white shadow-xl">
+        <section className="bg-sky-700 rounded-3xl p-6 md:p-8 text-white shadow-xl">
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-sm uppercase tracking-[0.25em] text-white/80">Quản lý hóa đơn</p>

@@ -6,7 +6,7 @@ const Settings = ({ darkMode, setDarkMode }) => {
   const navigate = useNavigate();
   const [settings, setSettings] = useState(() => {
     const saved = localStorage.getItem('moneyverse_settings');
-    return saved ? JSON.parse(saved) : {
+    const defaults = {
       language: 'vi',
       fontSize: 'normal',
       notifications: {
@@ -16,17 +16,16 @@ const Settings = ({ darkMode, setDarkMode }) => {
         transactionAlerts: true,
         billReminders: true,
         promotions: false,
+        dailyEntryReminder: false,
       },
-      privacy: {
-        profileVisibility: 'private',
-        showBalance: true,
-        showTransactionHistory: false,
-      },
-      security: {
-        autoLockout: 15,
-        sessionTimeout: 30,
-        loginAlerts: true,
-      },
+    };
+    if (!saved) return defaults;
+
+    const parsed = JSON.parse(saved);
+    return {
+      ...defaults,
+      ...parsed,
+      notifications: { ...defaults.notifications, ...(parsed.notifications || {}) },
     };
   });
 
@@ -73,9 +72,9 @@ const Settings = ({ darkMode, setDarkMode }) => {
 
         <div className="flex items-center gap-4">
           <DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
-          <div className="bg-gradient-to-r from-blue-400 to-indigo-500 w-10 h-10 rounded-full shadow-md border-2 border-white dark:border-gray-800 flex items-center justify-center font-bold text-white text-sm">
+          <button type="button" aria-label="Mở trang cá nhân" onClick={() => navigate('/profile')} className="bg-gradient-to-r from-blue-400 to-indigo-500 w-10 h-10 rounded-full cursor-pointer shadow-md border-2 border-white dark:border-gray-800 hover:opacity-80 transition-opacity flex items-center justify-center font-bold text-white text-sm">
             AD
-          </div>
+          </button>
         </div>
       </header>
 
@@ -257,6 +256,33 @@ const Settings = ({ darkMode, setDarkMode }) => {
             </button>
           </div>
 
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-semibold text-gray-800 dark:text-gray-200">Nhắc nhở nhập liệu hằng ngày</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Nhắc bạn ghi lại thu chi vào lúc 22:00 mỗi ngày</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                const enabled = !settings.notifications.dailyEntryReminder;
+                updateSetting('notifications.dailyEntryReminder', enabled);
+                if (enabled && 'Notification' in window && Notification.permission === 'default') {
+                  Notification.requestPermission();
+                }
+              }}
+              aria-label="Bật hoặc tắt nhắc nhở nhập liệu hằng ngày"
+              className={`relative w-12 h-6 rounded-full transition-colors ${
+                settings.notifications.dailyEntryReminder ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-gray-600'
+              }`}
+            >
+              <div
+                className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                  settings.notifications.dailyEntryReminder ? 'translate-x-6' : 'translate-x-0'
+                }`}
+              />
+            </button>
+          </div>
+
           {/* Khuyến mãi và ưu đãi */}
           <div className="flex items-center justify-between">
             <div>
@@ -272,134 +298,6 @@ const Settings = ({ darkMode, setDarkMode }) => {
               <div
                 className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
                   settings.notifications.promotions ? 'translate-x-6' : 'translate-x-0'
-                }`}
-              />
-            </button>
-          </div>
-        </section>
-
-        {/* Cài đặt riêng tư */}
-        <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 space-y-5">
-          <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">🔒</span>
-              <h2 className="text-xl font-bold text-gray-800 dark:text-white">Riêng tư</h2>
-            </div>
-          </div>
-
-          {/* Hiển thị hồ sơ */}
-          <div>
-            <p className="font-semibold text-gray-800 dark:text-gray-200 mb-3">Hiển thị hồ sơ</p>
-            <select
-              value={settings.privacy.profileVisibility}
-              onChange={(e) => updateSetting('privacy.profileVisibility', e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              <option value="private">🔒 Riêng tư (Chỉ bạn)</option>
-              <option value="friends">👥 Bạn bè</option>
-              <option value="public">🌐 Công khai</option>
-            </select>
-          </div>
-
-          {/* Hiển thị số dư */}
-          <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
-            <div>
-              <p className="font-semibold text-gray-800 dark:text-gray-200">Hiển thị số dư</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Cho phép người khác xem số dư ví</p>
-            </div>
-            <button
-              onClick={() => updateSetting('privacy.showBalance', !settings.privacy.showBalance)}
-              className={`relative w-12 h-6 rounded-full transition-colors ${
-                settings.privacy.showBalance ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-gray-600'
-              }`}
-            >
-              <div
-                className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
-                  settings.privacy.showBalance ? 'translate-x-6' : 'translate-x-0'
-                }`}
-              />
-            </button>
-          </div>
-
-          {/* Hiển thị lịch sử giao dịch */}
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-semibold text-gray-800 dark:text-gray-200">Hiển thị lịch sử giao dịch</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Cho phép người khác xem giao dịch của bạn</p>
-            </div>
-            <button
-              onClick={() => updateSetting('privacy.showTransactionHistory', !settings.privacy.showTransactionHistory)}
-              className={`relative w-12 h-6 rounded-full transition-colors ${
-                settings.privacy.showTransactionHistory ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-gray-600'
-              }`}
-            >
-              <div
-                className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
-                  settings.privacy.showTransactionHistory ? 'translate-x-6' : 'translate-x-0'
-                }`}
-              />
-            </button>
-          </div>
-        </section>
-
-        {/* Cài đặt bảo mật */}
-        <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 space-y-5">
-          <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">🛡️</span>
-              <h2 className="text-xl font-bold text-gray-800 dark:text-white">Bảo mật</h2>
-            </div>
-          </div>
-
-          {/* Tự động khóa */}
-          <div>
-            <p className="font-semibold text-gray-800 dark:text-gray-200 mb-3">Tự động khóa (phút)</p>
-            <input
-              type="number"
-              min="5"
-              max="60"
-              step="5"
-              value={settings.security.autoLockout}
-              onChange={(e) => updateSetting('security.autoLockout', parseInt(e.target.value))}
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-              Tự động khóa tài khoản sau {settings.security.autoLockout} phút không hoạt động
-            </p>
-          </div>
-
-          {/* Timeout phiên */}
-          <div>
-            <p className="font-semibold text-gray-800 dark:text-gray-200 mb-3">Timeout phiên (phút)</p>
-            <input
-              type="number"
-              min="15"
-              max="120"
-              step="15"
-              value={settings.security.sessionTimeout}
-              onChange={(e) => updateSetting('security.sessionTimeout', parseInt(e.target.value))}
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-              Đăng xuất tự động sau {settings.security.sessionTimeout} phút không hoạt động
-            </p>
-          </div>
-
-          {/* Cảnh báo đăng nhập */}
-          <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
-            <div>
-              <p className="font-semibold text-gray-800 dark:text-gray-200">Cảnh báo đăng nhập</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Thông báo khi có đăng nhập từ thiết bị mới</p>
-            </div>
-            <button
-              onClick={() => updateSetting('security.loginAlerts', !settings.security.loginAlerts)}
-              className={`relative w-12 h-6 rounded-full transition-colors ${
-                settings.security.loginAlerts ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-gray-600'
-              }`}
-            >
-              <div
-                className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
-                  settings.security.loginAlerts ? 'translate-x-6' : 'translate-x-0'
                 }`}
               />
             </button>

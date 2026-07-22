@@ -51,9 +51,9 @@ const Profile = ({ darkMode, setDarkMode }) => {
 
         <div className="flex items-center gap-4">
           <DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
-          <div className="bg-gradient-to-r from-blue-400 to-indigo-500 w-10 h-10 rounded-full shadow-md border-2 border-white dark:border-gray-800 flex items-center justify-center font-bold text-white text-sm">
+          <button type="button" aria-label="Mở trang cá nhân" onClick={() => navigate('/profile')} className="bg-gradient-to-r from-blue-400 to-indigo-500 w-10 h-10 rounded-full cursor-pointer shadow-md border-2 border-white dark:border-gray-800 hover:opacity-80 transition-opacity flex items-center justify-center font-bold text-white text-sm">
             AD
-          </div>
+          </button>
         </div>
       </header>
 

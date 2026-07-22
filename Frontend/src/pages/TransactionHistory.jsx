@@ -42,20 +42,14 @@ const TransactionHistory = ({ darkMode, setDarkMode, transactions }) => {
       {/* Header */}
       <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 p-4 sticky top-0 z-30 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <button 
-            onClick={() => navigate('/dashboard')} 
-            className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-1 font-medium"
-          >
-            ← <span className="hidden sm:inline">Quay lại Trang chủ</span>
-          </button>
-          <h1 className="text-xl font-bold text-gray-800 dark:text-white border-l pl-3 border-gray-300 dark:border-gray-600">Lịch sử giao dịch</h1>
+          <h1 className="text-xl font-bold text-gray-800 dark:text-white">Lịch sử giao dịch</h1>
         </div>
 
         <div className="flex items-center gap-4">
           <DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
-          <div className="bg-gradient-to-r from-blue-400 to-indigo-500 w-10 h-10 rounded-full shadow-md border-2 border-white dark:border-gray-800 flex items-center justify-center font-bold text-white text-sm">
+          <button type="button" aria-label="Mở trang cá nhân" onClick={() => navigate('/profile')} className="bg-gradient-to-r from-blue-400 to-indigo-500 w-10 h-10 rounded-full cursor-pointer shadow-md border-2 border-white dark:border-gray-800 hover:opacity-80 transition-opacity flex items-center justify-center font-bold text-white text-sm">
             AD
-          </div>
+          </button>
         </div>
       </header>
 

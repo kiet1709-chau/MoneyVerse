@@ -1,15 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Nhận thêm các props balance, setBalance, bills, setBills từ App.js
 const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills, transactions, setTransactions }) => {
+  const MAX_EXCHANGE_AMOUNT = 999999999;
   const navigate = useNavigate();
-  
+
   const [isBillCenterOpen, setIsBillCenterOpen] = useState(false);
   const [selectedBill, setSelectedBill] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [exchangeRates, setExchangeRates] = useState(null);
+  const [exchangeCurrency, setExchangeCurrency] = useState('USD');
+  const [exchangeAmount, setExchangeAmount] = useState('1');
+  const [exchangeUpdatedAt, setExchangeUpdatedAt] = useState('');
+  const [exchangeError, setExchangeError] = useState('');
+  const currencyFlags = {
+    USD: 'https://flagcdn.com/w40/us.png', EUR: 'https://flagcdn.com/w40/eu.png',
+    JPY: 'https://flagcdn.com/w40/jp.png', KRW: 'https://flagcdn.com/w40/kr.png',
+    GBP: 'https://flagcdn.com/w40/gb.png', CNY: 'https://flagcdn.com/w40/cn.png',
+  };
 
   const pendingBills = bills.filter(b => b.status === 'pending');
   const pendingCount = pendingBills.length;
@@ -21,17 +32,37 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
   };
 
+  useEffect(() => {
+    const loadExchangeRates = async () => {
+      try {
+        setExchangeError('');
+        const response = await fetch('https://open.er-api.com/v6/latest/USD');
+        if (!response.ok) throw new Error();
+        const data = await response.json();
+        if (data.result !== 'success' || !data.rates?.VND) throw new Error();
+        setExchangeRates(data.rates);
+        setExchangeUpdatedAt(new Date(data.time_last_update_unix * 1000).toLocaleString('vi-VN'));
+      } catch {
+        setExchangeError('Chưa thể tải tỷ giá. Vui lòng thử lại sau.');
+      }
+    };
+    loadExchangeRates();
+  }, []);
+
+  const exchangeRateToVnd = exchangeRates ? exchangeRates.VND / exchangeRates[exchangeCurrency] : 0;
+  const convertedAmount = Math.max(0, Number(exchangeAmount) || 0) * exchangeRateToVnd;
+
   const handleConfirmPayment = () => {
     setIsProcessing(true);
     setTimeout(() => {
       // Trừ tiền
       setBalance(prev => prev - selectedBill.amount);
-      
+
       // Cập nhật trạng thái 'paid' và thêm ngày thanh toán hiện tại
       const currentDate = new Date().toLocaleDateString('vi-VN');
-      setBills(prev => prev.map(bill => 
-        bill.id === selectedBill.id 
-          ? { ...bill, status: 'paid', date: currentDate } 
+      setBills(prev => prev.map(bill =>
+        bill.id === selectedBill.id
+          ? { ...bill, status: 'paid', date: currentDate }
           : bill
       ));
 
@@ -42,15 +73,15 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
         amount: selectedBill.amount,
         type: 'expense', // Loại chi tiêu để hiển thị dấu trừ
         category: selectedBill.provider || 'Hóa đơn',
-        date: new Date().toLocaleString('vi-VN', { 
-          day: '2-digit', month: '2-digit', year: 'numeric', 
-          hour: '2-digit', minute: '2-digit' 
+        date: new Date().toLocaleString('vi-VN', {
+          day: '2-digit', month: '2-digit', year: 'numeric',
+          hour: '2-digit', minute: '2-digit'
         }).replace(',', ''),
         status: 'success',
         // Tự động lấy icon giống với bill
         icon: selectedBill.name.includes('học') ? '🎓' : selectedBill.name.includes('điện') ? '⚡' : '🌐'
       };
-      
+
       // Đẩy giao dịch mới lên đầu danh sách
       setTransactions(prev => [newTx, ...prev]);
 
@@ -74,7 +105,7 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
             <button className="p-2 text-xl font-bold lg:hidden text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg" onClick={() => setSidebarOpen(true)}>≡</button>
             <h1 className="text-xl font-bold text-gray-800 dark:text-white hidden sm:block">Trang chủ</h1>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <button onClick={() => setIsBillCenterOpen(true)} className="relative p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,20 +125,25 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
         </header>
 
         <main className="p-6 md:p-8 flex-1 max-w-6xl mx-auto w-full space-y-6">
-          
+
           {/* Card Số dư */}
           <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-6 shadow-xl text-white relative overflow-hidden">
             <div className="absolute top-0 right-0 -mr-8 -mt-8 w-40 h-40 rounded-full bg-white opacity-10"></div>
             <p className="text-purple-100 text-sm md:text-base font-medium mb-1">Số dư khả dụng</p>
             <h2 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight">{formatCurrency(balance)}</h2>
             <div className="flex gap-4 relative z-10">
-              <button 
-                onClick={() => navigate('/wallet-top-up')}
+              <button
+                onClick={() => navigate('/add-transaction?type=income')}
                 className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg> Nạp tiền
               </button>
+              <button
+                onClick={() => navigate('/add-transaction?type=expense')}
+                className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 12H4"></path></svg> Chi tiêu
+              </button>
               {/* ĐÃ THÊM SỰ KIỆN NÚT CHUYỂN KHOẢN TRONG CARD */}
-              <button 
+              <button
                 onClick={() => {}}
                 className="hidden bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
               >
@@ -117,34 +153,34 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
           </div>
 
           {/* 👉 ĐÃ THÊM: Khu vực Thao tác nhanh */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {/* Nút Chuyển Khoản mà bạn cung cấp */}
-            <button 
+            <button
               onClick={() => {}}
               className="hidden flex flex-col items-center justify-center p-4 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-2xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors shadow-sm"
             >
               <span className="text-2xl mb-2">💸</span>
               <span className="font-semibold text-sm">Chuyển khoản</span>
             </button>
-            
+
             {/* Thêm một số nút tiện ích cho đồng bộ giao diện */}
-            <button 
-              onClick={() => navigate('/wallet-top-up')}
+            <button
+              onClick={() => navigate('/add-transaction')}
               className="flex flex-col items-center justify-center p-4 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-2xl hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors shadow-sm"
             >
-              <span className="text-2xl mb-2">📥</span>
-              <span className="font-semibold text-sm">Nạp tiền</span>
+              <span className="text-2xl mb-2">➕</span>
+              <span className="font-semibold text-sm">Thu nhập mới</span>
             </button>
-            
-            <button 
-              onClick={() => navigate('/mobile-top-up')}
+
+            <button
+              onClick={() => navigate('/add-transaction?type=expense&category=food')}
               className="flex flex-col items-center justify-center p-4 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-2xl hover:bg-orange-100 dark:hover:bg-orange-900/40 transition-colors shadow-sm"
             >
-              <span className="text-2xl mb-2">📱</span>
-              <span className="font-semibold text-sm">Nạp ĐT</span>
+              <span className="text-2xl mb-2">🍔</span>
+              <span className="font-semibold text-sm">Ăn uống</span>
             </button>
-            
-            <button 
+
+            <button
               onClick={() => setIsBillCenterOpen(false) || navigate('/bills')}
               className="flex flex-col items-center justify-center p-4 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-2xl hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors shadow-sm"
             >
@@ -152,20 +188,20 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
               <span className="font-semibold text-sm">Hóa đơn</span>
             </button>
 
-            <button 
-              onClick={() => navigate('/movie-tickets')}
+            <button
+              onClick={() => navigate('/add-transaction?type=expense&category=shopping')}
               className="flex flex-col items-center justify-center p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors shadow-sm"
             >
-              <span className="text-2xl mb-2">🎬</span>
-              <span className="font-semibold text-sm">Vé Phim</span>
+              <span className="text-2xl mb-2">🛒</span>
+              <span className="font-semibold text-sm">Mua sắm</span>
             </button>
 
-            <button 
-              onClick={() => navigate('/travel-booking')}
+            <button
+              onClick={() => navigate('/spending-statistics?focus=limit')}
               className="flex flex-col items-center justify-center p-4 bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-400 rounded-2xl hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-colors shadow-sm"
             >
-              <span className="text-2xl mb-2">✈️</span>
-              <span className="font-semibold text-sm">Du Lịch</span>
+              <span className="text-2xl mb-2">🎯</span>
+              <span className="font-semibold text-sm">Đặt hạn mức</span>
             </button>
           </div>
 
@@ -192,14 +228,14 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
             <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-bold text-lg text-gray-800 dark:text-white">Giao dịch gần đây</h3>
-                <button 
-                  onClick={() => navigate('/transaction-history')} 
+                <button
+                  onClick={() => navigate('/transaction-history')}
                   className="text-sm text-purple-600 dark:text-purple-400 font-medium hover:underline"
                 >
                   Xem tất cả
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 {recentTransactions.length === 0 ? (
                   <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-8">Chưa có giao dịch nào</p>
@@ -227,6 +263,38 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
             </div>
           </div>
 
+          <section className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-5">
+              <div>
+                <h2 className="font-bold text-lg text-gray-800 dark:text-white">Tra cứu tỷ giá</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Quy đổi ngoại tệ sang VNĐ theo tỷ giá tham khảo.</p>
+              </div>
+              <button type="button" onClick={() => window.location.reload()} className="text-sm font-semibold text-sky-700 dark:text-sky-400 hover:underline">Làm mới</button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1.2fr] items-end gap-3">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Số tiền
+                <input type="number" min="0" max={MAX_EXCHANGE_AMOUNT} step="1" value={exchangeAmount} onChange={(event) => {
+                  const value = event.target.value;
+                  setExchangeAmount(value === '' ? '' : String(Math.min(Number(value), MAX_EXCHANGE_AMOUNT)));
+                }} className="mt-2 w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500" />
+              </label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Ngoại tệ
+                <div className="mt-2 flex items-center gap-2">
+                  <img src={currencyFlags[exchangeCurrency]} alt="Cờ quốc gia" className="h-10 w-14 rounded-md object-cover border border-gray-200 dark:border-gray-700" />
+                  <select value={exchangeCurrency} onChange={(event) => setExchangeCurrency(event.target.value)} className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500">
+                  <option value="USD">🇺🇸 USD — Đô la Mỹ</option><option value="EUR">🇪🇺 EUR — Euro</option><option value="JPY">🇯🇵 JPY — Yên Nhật</option><option value="KRW">🇰🇷 KRW — Won Hàn Quốc</option><option value="GBP">🇬🇧 GBP — Bảng Anh</option><option value="CNY">🇨🇳 CNY — Nhân dân tệ</option>
+                  </select>
+                </div>
+              </label>
+              <div className="rounded-xl bg-sky-50 dark:bg-sky-900/20 px-4 py-3 min-h-[76px] flex flex-col justify-center">
+                <span className="text-xs font-semibold text-sky-700 dark:text-sky-300">Giá trị quy đổi</span>
+                <strong className="text-xl text-sky-800 dark:text-sky-200">{exchangeRates ? formatCurrency(convertedAmount) : 'Đang tải tỷ giá...'}</strong>
+              </div>
+            </div>
+            {exchangeRates && <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">1 {exchangeCurrency} ≈ {formatCurrency(exchangeRateToVnd)} · Cập nhật: {exchangeUpdatedAt}</p>}
+            {exchangeError && <p className="text-xs text-red-600 dark:text-red-400 mt-3">{exchangeError}</p>}
+          </section>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
               <div>
@@ -243,7 +311,7 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
                   <div className="bg-gradient-to-r from-purple-500 to-indigo-500 h-full rounded-full transition-all duration-500" style={{ width: '40%' }}></div>
                 </div>
               </div>
-              <button className="mt-5 w-full bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400 font-bold py-2 rounded-xl text-sm hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors">
+              <button onClick={() => navigate('/savings-goals')} className="mt-5 w-full bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400 font-bold py-2 rounded-xl text-sm hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors">
                 + Bỏ ống thêm tiền
               </button>
             </div>

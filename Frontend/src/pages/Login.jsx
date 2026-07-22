@@ -59,7 +59,7 @@ const Login = ({ darkMode, setDarkMode }) => {
           <div>
             <div className="flex justify-between items-center mb-2">
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Mật khẩu</label>
-              <a href="#" className="text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline">Quên mật khẩu?</a>
+              <Link to="/forgot-password" className="text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline">Quên mật khẩu?</Link>
             </div>
             <input 
               type="password" 

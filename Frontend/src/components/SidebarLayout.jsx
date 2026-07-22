@@ -24,14 +24,19 @@ const SidebarLayout = ({ darkMode, setDarkMode }) => {
     <div className="bg-gray-50 dark:bg-gray-900 min-h-screen text-gray-800 dark:text-gray-200 flex transition-colors duration-300 font-sans">
       <aside className="fixed top-0 left-0 z-50 bg-white dark:bg-gray-800 w-64 h-screen shadow-md border-r border-gray-200 dark:border-gray-700 flex flex-col justify-between p-4 lg:translate-x-0">
         <div>
-          <div className="flex items-center gap-3 mb-8 px-2 mt-2">
+          <NavLink
+            to="/dashboard"
+            aria-label="Về trang chủ MoneyVerse"
+            className="flex items-center gap-3 mb-8 px-2 mt-2 rounded-xl no-underline"
+            style={{ border: 'none', boxShadow: 'none', outline: 'none' }}
+          >
             <div className="bg-gradient-to-br from-purple-600 to-indigo-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xl shadow-lg">
               M
             </div>
             <span className="font-bold text-2xl dark:text-white bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600">
               MoneyVerse
             </span>
-          </div>
+          </NavLink>
 
           <nav className="space-y-2">
             {menuItems.map((item) => (

@@ -5,6 +5,7 @@ import DarkModeToggle from '../components/DarkModeToggle';
 const SavingsGoals = ({ darkMode, setDarkMode }) => {
   const navigate = useNavigate();
   const [showAddGoal, setShowAddGoal] = useState(false);
+  const [editingAmounts, setEditingAmounts] = useState({});
   const [goals, setGoals] = useState([
     { id: 1, name: 'Du lịch Nhật Bản', target: 50000000, current: 15000000, icon: '✈️', color: 'bg-sky-600' },
     { id: 2, name: 'Mua laptop mới', target: 30000000, current: 8500000, icon: '💻', color: 'bg-blue-800' },
@@ -57,22 +58,16 @@ const SavingsGoals = ({ darkMode, setDarkMode }) => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300 font-sans">
       <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 p-4 sticky top-0 z-30 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-1 font-medium"
-          >
-            ← <span className="hidden sm:inline">Quay lại Trang chủ</span>
-          </button>
-          <h1 className="text-xl font-bold text-gray-800 dark:text-white border-l pl-3 border-gray-300 dark:border-gray-600">
+          <h1 className="text-xl font-bold text-gray-800 dark:text-white">
             Heo tiết kiệm
           </h1>
         </div>
 
         <div className="flex items-center gap-4">
           <DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
-          <div className="bg-gradient-to-r from-blue-400 to-indigo-500 w-10 h-10 rounded-full shadow-md border-2 border-white dark:border-gray-800 flex items-center justify-center font-bold text-white text-sm">
+          <button type="button" aria-label="Mở trang cá nhân" onClick={() => navigate('/profile')} className="bg-gradient-to-r from-blue-400 to-indigo-500 w-10 h-10 rounded-full cursor-pointer shadow-md border-2 border-white dark:border-gray-800 hover:opacity-80 transition-opacity flex items-center justify-center font-bold text-white text-sm">
             AD
-          </div>
+          </button>
         </div>
       </header>
 
@@ -182,12 +177,26 @@ const SavingsGoals = ({ darkMode, setDarkMode }) => {
                       type="number"
                       min="0"
                       max={goal.target}
-                      value={goal.current}
-                      onChange={(e) => handleUpdateGoal(goal.id, Number(e.target.value))}
+                      value={editingAmounts[goal.id] ?? goal.current}
+                      onFocus={(event) => {
+                        if (goal.current === 0) event.target.select();
+                      }}
+                      onChange={(event) => {
+                        const rawValue = event.target.value.replace(/^0+(?=\d)/, '');
+                        setEditingAmounts((current) => ({ ...current, [goal.id]: rawValue }));
+                        if (rawValue !== '') handleUpdateGoal(goal.id, Number(rawValue));
+                      }}
                       className="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                     <button
-                      onClick={() => handleUpdateGoal(goal.id, goal.current + 1000000)}
+                      onClick={() => {
+                        setEditingAmounts((current) => {
+                          const next = { ...current };
+                          delete next[goal.id];
+                          return next;
+                        });
+                        handleUpdateGoal(goal.id, goal.current + 1000000);
+                      }}
                       className="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm transition-colors"
                     >
                       +1M
