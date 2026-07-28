@@ -73,10 +73,7 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
         amount: selectedBill.amount,
         type: 'expense', // Loại chi tiêu để hiển thị dấu trừ
         category: selectedBill.provider || 'Hóa đơn',
-        date: new Date().toLocaleString('vi-VN', {
-          day: '2-digit', month: '2-digit', year: 'numeric',
-          hour: '2-digit', minute: '2-digit'
-        }).replace(',', ''),
+        date: new Date().toISOString(),
         status: 'success',
         // Tự động lấy icon giống với bill
         icon: selectedBill.name.includes('học') ? '🎓' : selectedBill.name.includes('điện') ? '⚡' : '🌐'
@@ -165,11 +162,11 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
 
             {/* Thêm một số nút tiện ích cho đồng bộ giao diện */}
             <button
-              onClick={() => navigate('/add-transaction')}
+              onClick={() => navigate('/savings-goals')}
               className="flex flex-col items-center justify-center p-4 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-2xl hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors shadow-sm"
             >
-              <span className="text-2xl mb-2">➕</span>
-              <span className="font-semibold text-sm">Thu nhập mới</span>
+              <span className="text-2xl mb-2">🐷</span>
+              <span className="font-semibold text-sm">Tiết kiệm</span>
             </button>
 
             <button
