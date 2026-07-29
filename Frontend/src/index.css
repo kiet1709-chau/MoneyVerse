@@ -9,11 +9,23 @@ button,
 input,
 select,
 textarea {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Arial,
+    sans-serif;
 }
 
 .font-sans {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif !important;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Arial,
+    sans-serif !important;
 }
 
 /* Improve readability across the application without changing the page layout. */
@@ -173,4 +185,63 @@ strong.text-xl {
   --color-cyan-400: #38bdf8;
   --color-cyan-500: #0ea5e9;
   --color-teal-500: #0284c7;
+}
+
+/* Font size helpers controlled by Settings */
+.font-size-small {
+  font-size: 13px;
+}
+.font-size-normal {
+  font-size: 16px;
+}
+.font-size-large {
+  font-size: 18px;
+}
+
+/* ======================================================
+   ẨN TRIỆT ĐỂ THANH GOOGLE TRANSLATE BANNER CHO TOÀN APP
+   ====================================================== */
+
+/* 1. Ẩn tất cả iframe banner do Google Translate tự động tiêm vào body */
+iframe.goog-te-banner-frame,
+iframe.skiptranslate,
+.goog-te-banner-frame,
+.VIpgJd-Z44tw-R32lh-banner,
+.VIpgJd-Z44tw-R32lh-banner-frame,
+#goog-gt-tt,
+.goog-te-balloon-frame {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  width: 0 !important;
+  pointer-events: none !important;
+}
+
+/* 2. Ép body luôn đè lên trên cùng, không bị Google thêm top: 40px/50px */
+body {
+  top: 0px !important;
+  position: static !important;
+}
+
+/* 3. Tắt viền highlight màu vàng khi di chuột vào chữ đã dịch */
+.goog-text-highlight {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Tùy chỉnh ẩn logo Google nếu muốn gọn hơn */
+.goog-logo-link {
+  display: none !important;
+}
+
+.goog-te-gadget {
+  color: transparent !important;
+}
+
+.goog-te-gadget .goog-te-combo {
+  color: #333;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }

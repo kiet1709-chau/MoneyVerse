@@ -1,39 +1,48 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import DarkModeToggle from '../components/DarkModeToggle';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import DarkModeToggle from "../components/DarkModeToggle";
 
 // ĐÃ SỬA: Nhận mảng `transactions` từ props (được truyền từ App.js xuống)
 const TransactionHistory = ({ darkMode, setDarkMode, transactions }) => {
   const navigate = useNavigate();
-  
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState('all'); // 'all' | 'income' | 'expense'
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterType, setFilterType] = useState("all"); // 'all' | 'income' | 'expense'
 
   // Định dạng tiền tệ VND
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(amount);
   };
 
   // Tính toán thống kê nhanh từ danh sách hiển thị
   const totalIncome = (transactions || [])
-    .filter(t => t.type === 'income')
+    .filter((t) => t.type === "income")
     .reduce((sum, item) => sum + item.amount, 0);
 
   const totalExpense = (transactions || [])
-    .filter(t => t.type === 'expense')
+    .filter((t) => t.type === "expense")
     .reduce((sum, item) => sum + item.amount, 0);
 
   // 👉 ĐÃ SỬA LỖI TÌM KIẾM: An toàn hơn với kiểu dữ liệu số (Number) và Undefined
-  const filteredTransactions = (transactions || []).filter(t => {
+  const filteredTransactions = (transactions || []).filter((t) => {
     // Tối ưu: Đưa toLowerCase() ra ngoài để không phải tính lại ở mỗi điều kiện
-    const searchLower = searchTerm.toLowerCase(); 
-    
-    const matchesSearch = 
-      String(t.name || '').toLowerCase().includes(searchLower) || 
-      String(t.id || '').toLowerCase().includes(searchLower) ||
-      String(t.category || '').toLowerCase().includes(searchLower);
-      
-    const matchesType = filterType === 'all' ? true : t.type === filterType;
+    const searchLower = searchTerm.toLowerCase();
+
+    const matchesSearch =
+      String(t.name || "")
+        .toLowerCase()
+        .includes(searchLower) ||
+      String(t.id || "")
+        .toLowerCase()
+        .includes(searchLower) ||
+      String(t.category || "")
+        .toLowerCase()
+        .includes(searchLower);
+
+    const matchesType = filterType === "all" ? true : t.type === filterType;
     return matchesSearch && matchesType;
   });
 
@@ -42,12 +51,19 @@ const TransactionHistory = ({ darkMode, setDarkMode, transactions }) => {
       {/* Header */}
       <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 p-4 sticky top-0 z-30 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <h1 className="text-xl font-bold text-gray-800 dark:text-white">Lịch sử giao dịch</h1>
+          <h1 className="text-xl font-bold text-gray-800 dark:text-white">
+            Lịch sử giao dịch
+          </h1>
         </div>
 
         <div className="flex items-center gap-4">
           <DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
-          <button type="button" aria-label="Mở trang cá nhân" onClick={() => navigate('/profile')} className="bg-gradient-to-r from-blue-400 to-indigo-500 w-10 h-10 rounded-full cursor-pointer shadow-md border-2 border-white dark:border-gray-800 hover:opacity-80 transition-opacity flex items-center justify-center font-bold text-white text-sm">
+          <button
+            type="button"
+            aria-label="Mở trang cá nhân"
+            onClick={() => navigate("/profile")}
+            className="bg-gradient-to-r from-blue-400 to-indigo-500 w-10 h-10 rounded-full cursor-pointer shadow-md border-2 border-white dark:border-gray-800 hover:opacity-80 transition-opacity flex items-center justify-center font-bold text-white text-sm"
+          >
             AD
           </button>
         </div>
@@ -55,31 +71,48 @@ const TransactionHistory = ({ darkMode, setDarkMode, transactions }) => {
 
       {/* Main Container */}
       <main className="p-6 md:p-8 max-w-6xl mx-auto space-y-6">
-        
         {/* Thẻ thống kê thu chi nhanh */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex justify-between items-center">
             <div>
-              <p className="text-xs text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider">Tổng thu nhập</p>
-              <h3 className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{formatCurrency(totalIncome)}</h3>
+              <p className="text-xs text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider">
+                Tổng thu nhập
+              </p>
+              <h3 className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">
+                {formatCurrency(totalIncome)}
+              </h3>
             </div>
-            <div className="w-12 h-12 bg-green-50 dark:bg-green-950/30 rounded-xl flex items-center justify-center text-green-600 dark:text-green-400 text-xl">📈</div>
+            <div className="w-12 h-12 bg-green-50 dark:bg-green-950/30 rounded-xl flex items-center justify-center text-green-600 dark:text-green-400 text-xl">
+              📈
+            </div>
           </div>
 
           <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex justify-between items-center">
             <div>
-              <p className="text-xs text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider">Tổng chi tiêu</p>
-              <h3 className="text-2xl font-bold text-red-600 dark:text-red-400 mt-1">{formatCurrency(totalExpense)}</h3>
+              <p className="text-xs text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider">
+                Tổng chi tiêu
+              </p>
+              <h3 className="text-2xl font-bold text-red-600 dark:text-red-400 mt-1">
+                {formatCurrency(totalExpense)}
+              </h3>
             </div>
-            <div className="w-12 h-12 bg-red-50 dark:bg-red-950/30 rounded-xl flex items-center justify-center text-red-600 dark:text-red-400 text-xl">📉</div>
+            <div className="w-12 h-12 bg-red-50 dark:bg-red-950/30 rounded-xl flex items-center justify-center text-red-600 dark:text-red-400 text-xl">
+              📉
+            </div>
           </div>
 
           <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex justify-between items-center">
             <div>
-              <p className="text-xs text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider">Tổng số giao dịch</p>
-              <h3 className="text-2xl font-bold text-gray-800 dark:text-white mt-1">{(transactions || []).length}</h3>
+              <p className="text-xs text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider">
+                Tổng số giao dịch
+              </p>
+              <h3 className="text-2xl font-bold text-gray-800 dark:text-white mt-1">
+                {(transactions || []).length}
+              </h3>
             </div>
-            <div className="w-12 h-12 bg-purple-50 dark:bg-purple-950/30 rounded-xl flex items-center justify-center text-purple-600 dark:text-purple-400 text-xl">📋</div>
+            <div className="w-12 h-12 bg-purple-50 dark:bg-purple-950/30 rounded-xl flex items-center justify-center text-purple-600 dark:text-purple-400 text-xl">
+              📋
+            </div>
           </div>
         </div>
 
@@ -102,31 +135,31 @@ const TransactionHistory = ({ darkMode, setDarkMode, transactions }) => {
           {/* Các nút bấm bộ lọc */}
           <div className="flex gap-2 w-full md:w-auto">
             <button
-              onClick={() => setFilterType('all')}
+              onClick={() => setFilterType("all")}
               className={`flex-1 md:flex-initial px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
-                filterType === 'all'
-                  ? 'bg-purple-600 text-white shadow-sm shadow-purple-100 dark:shadow-none'
-                  : 'bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'
+                filterType === "all"
+                  ? "bg-purple-600 text-white shadow-sm shadow-purple-100 dark:shadow-none"
+                  : "bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50"
               }`}
             >
               Tất cả
             </button>
             <button
-              onClick={() => setFilterType('income')}
+              onClick={() => setFilterType("income")}
               className={`flex-1 md:flex-initial px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
-                filterType === 'income'
-                  ? 'bg-green-600 text-white shadow-sm'
-                  : 'bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'
+                filterType === "income"
+                  ? "bg-green-600 text-white shadow-sm"
+                  : "bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50"
               }`}
             >
               Thu nhập
             </button>
             <button
-              onClick={() => setFilterType('expense')}
+              onClick={() => setFilterType("expense")}
               className={`flex-1 md:flex-initial px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
-                filterType === 'expense'
-                  ? 'bg-red-500 text-white shadow-sm'
-                  : 'bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'
+                filterType === "expense"
+                  ? "bg-red-500 text-white shadow-sm"
+                  : "bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50"
               }`}
             >
               Chi tiêu
@@ -139,7 +172,9 @@ const TransactionHistory = ({ darkMode, setDarkMode, transactions }) => {
           {filteredTransactions.length === 0 ? (
             <div className="text-center py-16">
               <span className="text-5xl">📁</span>
-              <p className="text-gray-500 dark:text-gray-400 mt-4 font-medium">Không tìm thấy giao dịch nào phù hợp</p>
+              <p className="text-gray-500 dark:text-gray-400 mt-4 font-medium">
+                Không tìm thấy giao dịch nào phù hợp
+              </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -155,20 +190,29 @@ const TransactionHistory = ({ darkMode, setDarkMode, transactions }) => {
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700/50">
                   {filteredTransactions.map((t) => (
-                    <tr key={t.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
+                    <tr
+                      key={t.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"
+                    >
                       {/* Cột Tên giao dịch & Icon */}
                       <td className="p-4 pl-6">
                         <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl ${
-                            t.type === 'income' 
-                              ? 'bg-green-100 dark:bg-green-950/30 text-green-600' 
-                              : 'bg-red-100 dark:bg-red-950/30 text-red-500'
-                          }`}>
+                          <div
+                            className={`w-10 h-10 rounded-full flex items-center justify-center text-xl ${
+                              t.type === "income"
+                                ? "bg-green-100 dark:bg-green-950/30 text-green-600"
+                                : "bg-red-100 dark:bg-red-950/30 text-red-500"
+                            }`}
+                          >
                             {t.icon}
                           </div>
                           <div>
-                            <p className="font-bold text-gray-800 dark:text-gray-200 text-sm md:text-base">{t.name}</p>
-                            <p className="text-xs text-gray-400 md:hidden mt-1">{t.date}</p>
+                            <p className="font-bold text-gray-800 dark:text-gray-200 text-sm md:text-base">
+                              {t.name}
+                            </p>
+                            <p className="text-xs text-gray-400 md:hidden mt-1">
+                              {t.date}
+                            </p>
                           </div>
                         </div>
                       </td>
@@ -187,10 +231,15 @@ const TransactionHistory = ({ darkMode, setDarkMode, transactions }) => {
                         </span>
                       </td>
                       {/* Cột Số tiền */}
-                      <td className={`p-4 text-right pr-6 font-bold text-sm md:text-base ${
-                        t.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-500'
-                      }`}>
-                        {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
+                      <td
+                        className={`p-4 text-right pr-6 font-bold text-sm md:text-base ${
+                          t.type === "income"
+                            ? "text-green-600 dark:text-green-400"
+                            : "text-red-500"
+                        }`}
+                      >
+                        {t.type === "income" ? "+" : "-"}
+                        {formatCurrency(t.amount)}
                       </td>
                     </tr>
                   ))}

@@ -1,21 +1,55 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import DarkModeToggle from '../components/DarkModeToggle';
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
+import DarkModeToggle from "../components/DarkModeToggle";
 
-const Login = ({ darkMode, setDarkMode }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [authError, setAuthError] = useState('');
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5001/api";
+
+const Login = ({ darkMode, setDarkMode, setCurrentUser, setBalance }) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [authError, setAuthError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const savedUser = JSON.parse(localStorage.getItem('moneyverse_user') || 'null');
-    if ((savedUser && username === savedUser.username && password === savedUser.password) || (username === 'admin' && password === '123456')) {
-      setAuthError('');
-      navigate('/setup-balance');
-    } else {
-      setAuthError('Tài khoản hoặc mật khẩu không đúng! (Gợi ý: admin / 123456)');
+    setAuthError("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/auth/login`,
+        { username, password },
+        { withCredentials: true },
+      );
+
+      if (response.data?.accessToken) {
+        localStorage.setItem("accessToken", response.data.accessToken);
+      }
+      if (response.data?.user?.username) {
+        localStorage.setItem(
+          "moneyverse_currentUser",
+          response.data.user.username,
+        );
+        setCurrentUser?.(response.data.user.username);
+      }
+
+      const balanceFromServer = response.data?.user?.balance;
+      if (balanceFromServer !== null && balanceFromServer !== undefined) {
+        setBalance?.(balanceFromServer);
+        navigate("/dashboard");
+      } else {
+        navigate("/setup-balance");
+      }
+    } catch (error) {
+      setAuthError(
+        error.response?.data?.message ||
+          "Đăng nhập thất bại. Vui lòng thử lại.",
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -36,7 +70,9 @@ const Login = ({ darkMode, setDarkMode }) => {
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600">
             MoneyVerse
           </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">Quản lý tài chính thông minh</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">
+            Quản lý tài chính thông minh
+          </p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-5">
@@ -46,9 +82,11 @@ const Login = ({ darkMode, setDarkMode }) => {
             </div>
           )}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Tên đăng nhập</label>
-            <input 
-              type="text" 
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              Tên đăng nhập
+            </label>
+            <input
+              type="text"
               required
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -58,11 +96,18 @@ const Login = ({ darkMode, setDarkMode }) => {
           </div>
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Mật khẩu</label>
-              <Link to="/forgot-password" className="text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline">Quên mật khẩu?</Link>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Mật khẩu
+              </label>
+              <Link
+                to="/forgot-password"
+                className="text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline"
+              >
+                Quên mật khẩu?
+              </Link>
             </div>
-            <input 
-              type="password" 
+            <input
+              type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -70,14 +115,21 @@ const Login = ({ darkMode, setDarkMode }) => {
               className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-800 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all"
             />
           </div>
-          <button type="submit" className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-purple-500/30 mt-4 transform hover:-translate-y-0.5">
-            Đăng nhập
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-purple-500/30 mt-4 transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
           </button>
         </form>
 
         <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-8">
-          Chưa có tài khoản?{' '}
-          <Link to="/register" className="font-semibold text-purple-600 dark:text-purple-400 hover:underline focus:outline-none transition-colors">
+          Chưa có tài khoản?{" "}
+          <Link
+            to="/register"
+            className="font-semibold text-purple-600 dark:text-purple-400 hover:underline focus:outline-none transition-colors"
+          >
             Mở ví ngay
           </Link>
         </p>

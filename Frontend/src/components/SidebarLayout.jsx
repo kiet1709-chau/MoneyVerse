@@ -1,24 +1,24 @@
-import React from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import DarkModeToggle from './DarkModeToggle';
+import React from "react";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import DarkModeToggle from "./DarkModeToggle";
 
 const SidebarLayout = ({ darkMode, setDarkMode }) => {
   const navigate = useNavigate();
 
   const menuItems = [
-    { name: 'Trang chủ', icon: '💳', path: '/dashboard' },
-    { name: 'Lịch sử giao dịch', icon: '📋', path: '/transaction-history' },
-    { name: 'Thống kê chi tiêu', icon: '📊', path: '/spending-statistics' },
-    { name: 'Báo cáo', icon: '📈', path: '/reports' },
-    { name: 'Heo tiết kiệm', icon: '🐷', path: '/savings-goals' },
-    { name: 'Cài đặt bảo mật', icon: '🛡️', path: '/security-settings' },
+    { name: "Trang chủ", icon: "💳", path: "/dashboard" },
+    { name: "Lịch sử giao dịch", icon: "📋", path: "/transaction-history" },
+    { name: "Thống kê chi tiêu", icon: "📊", path: "/spending-statistics" },
+    { name: "Báo cáo", icon: "📈", path: "/reports" },
+    { name: "Heo tiết kiệm", icon: "🐷", path: "/savings-goals" },
+    { name: "Cài đặt bảo mật", icon: "🛡️", path: "/security-settings" },
   ];
 
   const sidebarLinkClass = ({ isActive }) =>
     `w-full flex items-center gap-3 px-3 py-3 rounded-xl font-medium transition-all text-left ${
       isActive
-        ? 'bg-purple-50 dark:bg-gray-700 text-purple-600 dark:text-purple-400'
-        : 'text-gray-600 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400'
+        ? "bg-purple-50 dark:bg-gray-700 text-purple-600 dark:text-purple-400"
+        : "text-gray-600 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400"
     }`;
 
   return (
@@ -29,7 +29,7 @@ const SidebarLayout = ({ darkMode, setDarkMode }) => {
             to="/dashboard"
             aria-label="Về trang chủ MoneyVerse"
             className="flex items-center gap-3 mb-8 px-2 mt-2 rounded-xl no-underline"
-            style={{ border: 'none', boxShadow: 'none', outline: 'none' }}
+            style={{ border: "none", boxShadow: "none", outline: "none" }}
           >
             <div className="sidebar-brand-mark bg-gradient-to-br from-purple-600 to-indigo-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xl shadow-lg">
               M
@@ -41,7 +41,11 @@ const SidebarLayout = ({ darkMode, setDarkMode }) => {
 
           <nav className="space-y-2">
             {menuItems.map((item) => (
-              <NavLink key={item.name} to={item.path} className={sidebarLinkClass}>
+              <NavLink
+                key={item.name}
+                to={item.path}
+                className={sidebarLinkClass}
+              >
                 <span className="text-xl">{item.icon}</span>
                 <span>{item.name}</span>
               </NavLink>
@@ -51,11 +55,13 @@ const SidebarLayout = ({ darkMode, setDarkMode }) => {
 
         <div className="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-2">
           <div className="hidden flex items-center justify-between px-2 py-2">
-            <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">Chế độ tối</span>
+            <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">
+              Chế độ tối
+            </span>
             <DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
           </div>
           <button
-            onClick={() => navigate('/profile')}
+            onClick={() => navigate("/profile")}
             className="hidden w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 font-semibold text-sm transition-all text-left"
           >
             <span className="text-xl">👤</span>
