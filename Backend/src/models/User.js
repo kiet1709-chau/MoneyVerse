@@ -47,6 +47,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "Khác",
     },
+    balance: {
+      type: Number,
+      default: null,
+    },
   },
   { timestamps: true },
 );

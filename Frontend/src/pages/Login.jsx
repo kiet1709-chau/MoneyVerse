@@ -6,7 +6,7 @@ import DarkModeToggle from "../components/DarkModeToggle";
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5001/api";
 
-const Login = ({ darkMode, setDarkMode }) => {
+const Login = ({ darkMode, setDarkMode, setCurrentUser, setBalance }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
@@ -28,8 +28,21 @@ const Login = ({ darkMode, setDarkMode }) => {
       if (response.data?.accessToken) {
         localStorage.setItem("accessToken", response.data.accessToken);
       }
+      if (response.data?.user?.username) {
+        localStorage.setItem(
+          "moneyverse_currentUser",
+          response.data.user.username,
+        );
+        setCurrentUser?.(response.data.user.username);
+      }
 
-      navigate("/setup-balance");
+      const balanceFromServer = response.data?.user?.balance;
+      if (balanceFromServer !== null && balanceFromServer !== undefined) {
+        setBalance?.(balanceFromServer);
+        navigate("/dashboard");
+      } else {
+        navigate("/setup-balance");
+      }
     } catch (error) {
       setAuthError(
         error.response?.data?.message ||
@@ -86,12 +99,12 @@ const Login = ({ darkMode, setDarkMode }) => {
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Mật khẩu
               </label>
-              <a
-                href="#"
+              <Link
+                to="/forgot-password"
                 className="text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline"
               >
                 Quên mật khẩu?
-              </a>
+              </Link>
             </div>
             <input
               type="password"
