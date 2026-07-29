@@ -48,9 +48,7 @@ const AddTransaction = ({ darkMode, setDarkMode, balance, setBalance, setTransac
       category: transactionCategory,
       amount: numericAmount,
       type,
-      date: new Date().toLocaleString('vi-VN', {
-        day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
-      }).replace(',', ''),
+      date: new Date().toISOString(),
       status: 'success',
       icon: type === 'income' ? '💰' : '🛍️',
     };

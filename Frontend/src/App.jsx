@@ -12,6 +12,8 @@ import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 import TransactionHistory from './pages/TransactionHistory';
 import SpendingStatistics from './pages/SpendingStatistics';
+import Reports from './pages/Reports';
+import AllTransactionsReport from './pages/AllTransactionsReport';
 import SecuritySettings from './pages/SecuritySettings';
 import Bills from './pages/Bills';
 import Profile from './pages/Profile';
@@ -196,6 +198,8 @@ function App() {
               />
             }
           />
+          <Route path="reports" element={<Reports darkMode={darkMode} setDarkMode={setDarkMode} transactions={transactions} />} />
+          <Route path="all-transactions-report" element={<AllTransactionsReport transactions={transactions} />} />
           <Route
             path="security-settings"
             element={

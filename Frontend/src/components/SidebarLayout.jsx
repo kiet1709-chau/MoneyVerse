@@ -9,6 +9,7 @@ const SidebarLayout = ({ darkMode, setDarkMode }) => {
     { name: 'Trang chủ', icon: '💳', path: '/dashboard' },
     { name: 'Lịch sử giao dịch', icon: '📋', path: '/transaction-history' },
     { name: 'Thống kê chi tiêu', icon: '📊', path: '/spending-statistics' },
+    { name: 'Báo cáo', icon: '📈', path: '/reports' },
     { name: 'Heo tiết kiệm', icon: '🐷', path: '/savings-goals' },
     { name: 'Cài đặt bảo mật', icon: '🛡️', path: '/security-settings' },
   ];
