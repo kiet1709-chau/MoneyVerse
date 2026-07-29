@@ -127,7 +127,7 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
           <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-6 shadow-xl text-white relative overflow-hidden">
             <div className="absolute top-0 right-0 -mr-8 -mt-8 w-40 h-40 rounded-full bg-white opacity-10"></div>
             <p className="text-purple-100 text-sm md:text-base font-medium mb-1">Số dư khả dụng</p>
-            <h2 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight">{formatCurrency(balance)}</h2>
+            <h2 className="text-5xl md:text-6xl font-bold mb-5 tracking-tight">{formatCurrency(balance)}</h2>
             <div className="flex gap-4 relative z-10">
               <button
                 onClick={() => navigate('/add-transaction?type=income')}
@@ -150,7 +150,7 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
           </div>
 
           {/* 👉 ĐÃ THÊM: Khu vực Thao tác nhanh */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="quick-actions grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {/* Nút Chuyển Khoản mà bạn cung cấp */}
             <button
               onClick={() => {}}

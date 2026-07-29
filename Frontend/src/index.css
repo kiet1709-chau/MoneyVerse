@@ -16,6 +16,127 @@ textarea {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif !important;
 }
 
+/* Improve readability across the application without changing the page layout. */
+body {
+  font-size: 16px;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+html,
+#root {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+/* Tailwind typography utilities used throughout the screens. */
+.text-\[10px\] {
+  font-size: 11px;
+  line-height: 0.9rem;
+}
+
+.text-xs {
+  font-size: 12px;
+  line-height: 1.1rem;
+}
+
+.text-sm {
+  font-size: 14px;
+  line-height: 1.25rem;
+}
+
+.text-base {
+  font-size: 16px;
+  line-height: 1.45rem;
+}
+
+.text-lg {
+  font-size: 18px;
+  line-height: 1.55rem;
+}
+
+.text-xl {
+  font-size: 20px;
+  line-height: 1.65rem;
+}
+
+.text-2xl {
+  font-size: 28px;
+  line-height: 2.1rem;
+}
+
+.text-3xl {
+  font-size: 32px;
+  line-height: 2.4rem;
+}
+
+.text-4xl {
+  font-size: 38px;
+  line-height: 2.8rem;
+}
+
+.text-5xl {
+  font-size: 46px;
+  line-height: 1.1;
+}
+
+.text-6xl {
+  font-size: 60px;
+  line-height: 1.05;
+}
+
+/* Numeric fields and metric cards are primary information in MoneyVerse. */
+input[type="number"] {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+h3.text-2xl.font-bold,
+strong.text-2xl {
+  font-size: 1.75rem;
+  line-height: 1.1;
+}
+
+strong.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+
+/* Keep the sidebar identity at its original compact size. */
+.sidebar-brand-mark {
+  font-size: 20px;
+  line-height: 1.75rem;
+}
+
+.sidebar-brand-name {
+  font-size: 24px;
+  line-height: 2rem;
+}
+
+/* Make the dashboard shortcuts use the available space as primary actions. */
+.quick-actions > button:not(.hidden) {
+  min-height: 9.5rem;
+  padding: 1.25rem;
+}
+
+.quick-actions > button > span:first-child {
+  font-size: 2rem;
+  line-height: 1;
+  margin-bottom: 0.75rem;
+}
+
+.quick-actions > button > span:last-child {
+  font-size: 1.1rem;
+  line-height: 1.35rem;
+}
+
 /* Keep the dark-mode switch text only in Settings. */
 .absolute.top-6.right-6 span {
   display: none;

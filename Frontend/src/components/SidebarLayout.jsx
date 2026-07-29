@@ -31,10 +31,10 @@ const SidebarLayout = ({ darkMode, setDarkMode }) => {
             className="flex items-center gap-3 mb-8 px-2 mt-2 rounded-xl no-underline"
             style={{ border: 'none', boxShadow: 'none', outline: 'none' }}
           >
-            <div className="bg-gradient-to-br from-purple-600 to-indigo-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xl shadow-lg">
+            <div className="sidebar-brand-mark bg-gradient-to-br from-purple-600 to-indigo-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xl shadow-lg">
               M
             </div>
-            <span className="font-bold text-2xl dark:text-white bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600">
+            <span className="sidebar-brand-name font-bold text-2xl dark:text-white bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600">
               MoneyVerse
             </span>
           </NavLink>
@@ -64,7 +64,7 @@ const SidebarLayout = ({ darkMode, setDarkMode }) => {
         </div>
       </aside>
 
-      <div className="flex-1 lg:ml-64 w-full min-h-screen">
+      <div className="flex-1 min-w-0 lg:ml-64 min-h-screen">
         <main className="min-h-screen">
           <Outlet />
         </main>
