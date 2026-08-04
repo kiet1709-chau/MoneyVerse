@@ -194,7 +194,7 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
             </button>
 
             <button
-              onClick={() => navigate('/spending-statistics?focus=limit')}
+              onClick={() => navigate('/budget-limits')}
               className="flex flex-col items-center justify-center p-4 bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-400 rounded-2xl hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-colors shadow-sm"
             >
               <span className="text-2xl mb-2">🎯</span>

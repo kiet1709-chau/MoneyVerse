@@ -28,6 +28,7 @@ import Profile from "./pages/Profile";
 import SavingsGoals from "./pages/SavingsGoals";
 import Settings from "./pages/Settings";
 import BalanceSetup from "./pages/BalanceSetup";
+import BudgetLimits from "./pages/BudgetLimits";
 import SidebarLayout from "./components/SidebarLayout";
 
 // Helper lấy key lưu trữ số dư theo username
@@ -311,6 +312,7 @@ function App() {
               balance={balance}
               setBalance={setBalance}
               setTransactions={setTransactions}
+              transactions={transactions}
             />
           }
         />
@@ -398,6 +400,7 @@ function App() {
               />
             }
           />
+          <Route path="budget-limits" element={<BudgetLimits darkMode={darkMode} setDarkMode={setDarkMode} transactions={transactions} />} />
           <Route
             path="all-transactions-report"
             element={<AllTransactionsReport transactions={transactions} />}
