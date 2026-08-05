@@ -23,7 +23,6 @@ import SpendingStatistics from "./pages/SpendingStatistics";
 import Reports from "./pages/Report";
 import AllTransactionsReport from "./pages/AllTransactionsReport";
 import SecuritySettings from "./pages/SecuritySettings";
-import Bills from "./pages/Bills";
 import Profile from "./pages/Profile";
 import SavingsGoals from "./pages/SavingsGoals";
 import Settings from "./pages/Settings";
@@ -417,21 +416,6 @@ function App() {
           />
         </Route>
 
-        <Route
-          path="/bills"
-          element={
-            <Bills
-              darkMode={darkMode}
-              setDarkMode={setDarkMode}
-              balance={balance}
-              setBalance={setBalance}
-              bills={bills}
-              setBills={setBills}
-              transactions={transactions}
-              setTransactions={setTransactions}
-            />
-          }
-        />
         <Route
           path="/profile"
           element={<Profile darkMode={darkMode} setDarkMode={setDarkMode} />}

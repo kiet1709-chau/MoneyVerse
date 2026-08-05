@@ -178,11 +178,11 @@ const Dashboard = ({ darkMode, setDarkMode, balance, setBalance, bills, setBills
             </button>
 
             <button
-              onClick={() => setIsBillCenterOpen(false) || navigate('/bills')}
+              onClick={() => navigate('/add-transaction?type=expense&category=transport')}
               className="flex flex-col items-center justify-center p-4 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-2xl hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors shadow-sm"
             >
-              <span className="text-2xl mb-2">🧾</span>
-              <span className="font-semibold text-sm">Hóa đơn</span>
+              <span className="text-2xl mb-2">🚗</span>
+              <span className="font-semibold text-sm">Di chuyển</span>
             </button>
 
             <button

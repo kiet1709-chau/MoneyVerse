@@ -5,7 +5,7 @@ import DarkModeToggle from '../components/DarkModeToggle';
 const AddTransaction = ({ darkMode, setDarkMode, balance, setBalance, transactions = [], setTransactions }) => {
   const location = useLocation();
   const query = new URLSearchParams(location.search);
-  const presetCategories = { food: 'Ăn uống', shopping: 'Mua sắm' };
+  const presetCategories = { food: 'Ăn uống', shopping: 'Mua sắm', transport: 'Di chuyển' };
   const presetCategory = presetCategories[query.get('category')];
   const isExpense = query.get('type') === 'expense';
   const isPresetExpense = isExpense && Boolean(presetCategory);
@@ -84,7 +84,13 @@ const AddTransaction = ({ darkMode, setDarkMode, balance, setBalance, transactio
   return (
     <div className="bg-gray-50 dark:bg-gray-900 min-h-screen p-4 md:p-8 transition-colors duration-300 font-sans">
       <header className="max-w-2xl mx-auto flex items-center justify-between mb-8">
-        <button type="button" onClick={() => navigate('/budget-limits')} className="text-sm font-semibold text-purple-600 dark:text-purple-400 hover:underline">Đặt hạn mức</button>
+        <button
+          type="button"
+          onClick={() => navigate('/dashboard')}
+          className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg font-medium"
+        >
+          ← Trang chủ
+        </button>
         <DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
       </header>
 
